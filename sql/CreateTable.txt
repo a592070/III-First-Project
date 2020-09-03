@@ -1,0 +1,8 @@
+create table account
+(
+	username varchar2(255) not null
+		constraint ACCOUNT_PK
+			primary key,
+	password varchar2(255),
+	register date
+)
