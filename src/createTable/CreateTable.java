@@ -1,6 +1,6 @@
 package createTable;
 
-import dbConnection.ConnectionPool;
+import Connections.DBConnectionPool;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -11,10 +11,11 @@ import java.sql.SQLException;
 public interface CreateTable {
 
     boolean createTable() throws IOException, SQLException;
+    void init(String tableName);
 
     default boolean isExist(String tableName) throws IOException, SQLException {
         boolean t = false;
-        Connection conn = new ConnectionPool().getDataSource().getConnection();
+        Connection conn = new DBConnectionPool().getDataSource().getConnection();
 
 
         String query = "select table_name from user_tables where table_name = ?";
