@@ -1,4 +1,4 @@
-package stock;
+package dao.stockDTO;
 
 public class StockMonths {
     private String sUrl1 = "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&";

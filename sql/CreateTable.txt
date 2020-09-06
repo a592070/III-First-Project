@@ -1,22 +1,35 @@
-create table account
+create table ACCOUNT
 (
-	username varchar2(255) not null
-		constraint ACCOUNT_PK
-			primary key,
+	username varchar2(255) not null constraint ACCOUNT_PK primary key,
 	password varchar2(255),
-	register date
+	isadmin number(1) default 0 not null,
+	favorite1 number,
+	favorite2 number,
+	favorite3 number,
+	favorite4 number,
+	favorite5 number ,
+	register date,
+	last_update date
 )
 
-create table STOCKDAYS_ID
+create table STOCK_DAYS_ID
 (
-	day date not null
-             	constraint STOCKDAYS_ID_PK
-             		primary key,,
+	day date not null constraint STOCK_DAYS_ID_PK primary key,
 	trade_volume numeric(30),
-	trade_value numeric(30),
-	transaction numeric(30),
-	hprice numeric(30,2),
-	lprice numeric(30,2),
-	openingprice numeric(30,2),
-	closingprice numeric(30,2)
+    transation numeric(10),
+    h_price numeric(10,2),
+    l_price numeric(10,2),
+    opening_price numeric(10,2),
+    closing_price numeric(10,2)
+)
+
+
+create table STOCK_TOTAL_NO
+(
+	id number(10) not null constraint STOCK_TOTAL_NO_PK primary key,
+	name varchar2(255),
+	code_isin varchar2(255),
+	date_listed date,
+	industrial_group varchar2(255),
+	tablename varchar2(255)
 )

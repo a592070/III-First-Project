@@ -1,9 +1,9 @@
-package stock;
+package dao.stockDTO;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import pojo.StockDayBean;
+import pojo.StockDayDO;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -12,11 +12,10 @@ import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StockDays {
+public class StockDataSource {
     private String sUrl1 = "https://www.twse.com.tw/en/exchangeReport/STOCK_DAY?response=json";
     private String sUrl2 = "&date=";
     private String sUrl3 = "&stockNo=";
@@ -25,25 +24,19 @@ public class StockDays {
     private String sStockNo;
     private String tableName = "STOCK_DAYS_";
 
-    public StockDays(String sDate, String sStockNo) {
+    public StockDataSource(String sDate, String sStockNo) {
         this.sDate = sDate;
         this.sStockNo = sStockNo;
         sUrl = sUrl1+sUrl2+sDate+sUrl3+sStockNo;
         tableName+=sStockNo;
     }
-    public void dataLoading() throws IOException, SQLException, KeyManagementException, NoSuchAlgorithmException {
-//        CreateTable ct = new CreateStockDays();
-//        ct.init(this.tableName);
-//        ct.createTable();
-
+    public List<StockDayDO> getStockDaysList() throws IOException, KeyManagementException, NoSuchAlgorithmException {
         String json = getJson();
-        List<List<String>> lists = analyticJson(json);
-        List<StockDayBean> beans = new ArrayList<>();
+        List<List<String>> lists = getJsonList(json);
+        List<StockDayDO> beans = new ArrayList<>();
 
-        lists.forEach(ele -> beans.add(toBean(ele)));
-
-        beans.forEach(ele-> System.out.println(ele));
-
+        lists.forEach(ele -> beans.add(getStockDayBean(ele)));
+        return beans;
     }
     public String getJson() throws NoSuchAlgorithmException, KeyManagementException, IOException {
         SslUtils.ignoreSSL();
@@ -62,14 +55,12 @@ public class StockDays {
             return null;
         }
     }
-    public List<List<String>> analyticJson(String data){
+    public List<List<String>> getJsonList(String data){
         List<String> inList = new ArrayList<>();
         List<List<String>> list = new ArrayList<>();
 
         JSONObject jsonObject = JSON.parseObject(data);
         JSONArray dataArray = jsonObject.getJSONArray("data");
-
-
 
         for (int i = 0; i < dataArray.size(); i++) {
             JSONArray jsonArray = dataArray.getJSONArray(i);
@@ -97,10 +88,10 @@ public class StockDays {
      * @param list
      * @param <E>
      */
-    public <E> StockDayBean toBean(List<E> list){
+    public <E> StockDayDO getStockDayBean(List<E> list){
 //        int size = list.size();
-        StockDayBean dayBean = new StockDayBean();
-        dayBean.setId(Integer.valueOf(this.sStockNo));
+        StockDayDO dayBean = new StockDayDO();
+        dayBean.setStockNo(new BigDecimal(this.sStockNo));
         dayBean.setDate(Date.valueOf(String.valueOf(list.get(0)).replace("/", "-")));
         dayBean.setTradeVolume(new BigDecimal(String.valueOf(list.get(1)).replace(",", "")));
         dayBean.setOpeningPrice(new BigDecimal(String.valueOf(list.get(3)).replace(",", "")));
@@ -110,4 +101,6 @@ public class StockDays {
         dayBean.setTransAction(new BigDecimal(String.valueOf(list.get(8)).replace(",", "")));
         return dayBean;
     }
+
+
 }

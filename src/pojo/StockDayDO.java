@@ -3,23 +3,23 @@ package pojo;
 import java.math.BigDecimal;
 import java.sql.Date;
 
-public class StockDayBean {
+public class StockDayDO {
     private String name;
-    private int id;
+    private BigDecimal stockNo;
     private Date date;
-    private BigDecimal tradeVolume;
-    private BigDecimal transAction;
-    private BigDecimal highestPrice;
-    private BigDecimal lowestPrice;
-    private BigDecimal openingPrice;
-    private BigDecimal closingPrice;
+    private BigDecimal tradeVolume;     // 成交股數
+    private BigDecimal transAction;     // 成交筆數
+    private BigDecimal highestPrice;    // 最高價
+    private BigDecimal lowestPrice;     // 最低價
+    private BigDecimal openingPrice;    // 開盤價
+    private BigDecimal closingPrice;    // 收盤價
 
-    public StockDayBean() {
+    public StockDayDO() {
     }
 
-    public StockDayBean(String name, int id, Date date, BigDecimal tradeVolume, BigDecimal transAction, BigDecimal highestPrice, BigDecimal lowestPrice, BigDecimal openingPrice, BigDecimal closingPrice) {
+    public StockDayDO(String name, BigDecimal id, Date date, BigDecimal tradeVolume, BigDecimal transAction, BigDecimal highestPrice, BigDecimal lowestPrice, BigDecimal openingPrice, BigDecimal closingPrice) {
         this.name = name;
-        this.id = id;
+        this.stockNo = id;
         this.date = date;
         this.tradeVolume = tradeVolume;
         this.transAction = transAction;
@@ -37,12 +37,12 @@ public class StockDayBean {
         this.name = name;
     }
 
-    public int getId() {
-        return id;
+    public BigDecimal getStockNo() {
+        return stockNo;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStockNo(BigDecimal stockNo) {
+        this.stockNo = stockNo;
     }
 
     public Date getDate() {
@@ -103,9 +103,9 @@ public class StockDayBean {
 
     @Override
     public String toString() {
-        return "StockDayBean{" +
+        return "[" +
                 "name='" + name + '\'' +
-                ", id=" + id +
+                ", id=" + stockNo +
                 ", date=" + date +
                 ", tradeVolume=" + tradeVolume +
                 ", transAction=" + transAction +
@@ -113,6 +113,6 @@ public class StockDayBean {
                 ", lowestPrice=" + lowestPrice +
                 ", openingPrice=" + openingPrice +
                 ", closingPrice=" + closingPrice +
-                '}';
+                ']';
     }
 }

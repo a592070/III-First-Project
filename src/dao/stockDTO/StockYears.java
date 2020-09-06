@@ -1,4 +1,4 @@
-package stock;
+package dao.stockDTO;
 
 public class StockYears {
     private String sUrl1 = "https://www.twse.com.tw/exchangeReport/FMNPTK?response=json&";

@@ -1,4 +1,4 @@
-package Connections;
+package connections;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -52,6 +52,8 @@ public class DBConnectionPool {
         dataSource.setMaxIdle(sMaxIdle);            // 最大空閒連線數量
         dataSource.setMaxWaitMillis(sMaxWait);      // 最大等待時間
         dataSource.setRemoveAbandonedTimeout(sRemoveAbandonedTimeout);  // 回收時間
+
+        dataSource.setDefaultAutoCommit(false);
 
     }
     public BasicDataSource getDataSource() throws IOException {

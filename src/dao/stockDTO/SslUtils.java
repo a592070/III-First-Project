@@ -1,4 +1,4 @@
-package stock;
+package dao.stockDTO;
 
 import javax.net.ssl.*;
 import java.security.KeyManagementException;

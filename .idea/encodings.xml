@@ -2,5 +2,7 @@
 <project version="4">
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/resources/STOCK_DAY_2330_202008.csv" charset="x-windows-950" />
+    <file url="file://$PROJECT_DIR$/resources/STOCK_DAY_2330_202009.csv" charset="x-windows-950" />
+    <file url="file://$PROJECT_DIR$/resources/STOCK_TOTAL_NO_EN.txt" charset="x-windows-950" />
   </component>
 </project>

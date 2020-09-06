@@ -1,4 +1,4 @@
-package stock;
+package dao.stockDTO;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
