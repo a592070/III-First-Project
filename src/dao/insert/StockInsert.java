@@ -59,13 +59,15 @@ public class StockInsert {
 
             connection.commit();
         }catch (IOException | SQLException | KeyManagementException | NoSuchAlgorithmException e){
-            connection.rollback();
+            if(connection != null) connection.rollback();
             throw e;
         }finally {
-            predStmt.clearParameters();
-            predStmt.clearBatch();
-            predStmt.close();
-            connection.close();
+            if(predStmt != null) {
+                predStmt.clearParameters();
+                predStmt.clearBatch();
+                predStmt.close();
+            }
+            if(connection != null) connection.close();
         }
     }
 }

@@ -54,10 +54,10 @@ public class CreateStockDays implements CreateTable{
 
             conn.commit();
         }catch (IOException | SQLException e){
-            conn.rollback();
+            if(conn != null) conn.rollback();
             throw e;
         }finally {
-            conn.close();
+            if(conn != null) conn.close();
         }
     }
 }

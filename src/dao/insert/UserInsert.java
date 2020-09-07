@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Properties;
 
 public class UserInsert {
@@ -49,18 +50,20 @@ public class UserInsert {
                 predStmt = conn.prepareStatement(sql);
                 predStmt.setString(1, user.getUserName());
                 predStmt.setString(2, user.getPassword());
-                predStmt.setDate(3, new Date(System.currentTimeMillis()));
-                predStmt.setDate(4, new Date(System.currentTimeMillis()));
+                predStmt.setDate(3, Date.valueOf(LocalDate.now()));
+                predStmt.setDate(4, Date.valueOf(LocalDate.now()));
 
                 insertCount = predStmt.executeUpdate();
                 conn.commit();
             } catch (SQLException e) {
-                conn.rollback();
+                if(conn != null) conn.rollback();
                 throw e;
             } finally {
-                predStmt.clearParameters();
-                predStmt.close();
-                conn.close();
+                if(predStmt != null) {
+                    predStmt.clearParameters();
+                    predStmt.close();
+                }
+                if(conn != null) conn.close();
             }
         }
     }

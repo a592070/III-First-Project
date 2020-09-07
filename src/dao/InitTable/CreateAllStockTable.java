@@ -56,11 +56,13 @@ public class CreateAllStockTable implements CreateTable{
             stmt.execute(sql);
 
         }catch (SQLException e){
-            conn.rollback();
+            if(conn != null) conn.rollback();
             throw e;
         }finally {
-            stmt.close();
-            conn.close();
+            if(stmt != null) {
+                stmt.close();
+            }
+            if(conn != null) conn.close();
         }
 
     }
@@ -93,13 +95,15 @@ public class CreateAllStockTable implements CreateTable{
 
             conn.commit();
         }catch (SQLException e){
-            conn.rollback();
+            if(conn != null) conn.rollback();
             throw e;
         }finally {
-            predStmt.clearParameters();
-            predStmt.clearBatch();
-            predStmt.close();
-            conn.close();
+            if(predStmt != null) {
+                predStmt.clearParameters();
+                predStmt.clearBatch();
+                predStmt.close();
+            }
+            if(conn != null) conn.close();
         }
         return insertDataCount;
     }

@@ -12,11 +12,13 @@ import java.rmi.server.ExportException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException {
@@ -31,25 +33,55 @@ public class Main {
 //
 
 
-//        new CreateAccount().init();
-////        System.out.println(a);
-//        boolean b = new CreateAllStockTable().init();
-//        System.out.println(b);
+        new CreateAccount().init();
+//        System.out.println(a);
+        boolean b = new CreateAllStockTable().init();
+        System.out.println(b);
+
+        CreateTable cr = new CreateStockDays("3008");
+//        cr.dropTable("account".toUpperCase());
+        boolean c = cr.init();
+        System.out.println(c);
+
+
+
+//        UserDO user = new UserQuery().query("admin");
+//        System.out.println(user);
 //
-//        CreateTable cr = new CreateStockDays("3008");
-////        cr.dropTable("account".toUpperCase());
-//        boolean c = cr.init();
-//        System.out.println(c);
-
-
-        UserDO user = new UserQuery().query("admin");
-        System.out.println(user);
-
-        List<StockDayDO> query = new StockQuery().query(3008);
-        System.out.println(query);
+//        List<StockDayDO> query = new StockQuery().query(3008);
+//        System.out.println(query);
 
 //        new StockDays("20200801", "2330").dataLoading();
 
+//        Scanner sc =  new Scanner(System.in);
+//
+//        System.out.println(
+//                "input: "
+//        );
+//        String line = sc.nextLine();
+//        System.out.println(line);
+//        System.out.println(sc.nextInt());
+//        System.out.println(sc.next());
 
+
+
+
+    }
+    static Scanner sc = new Scanner(System.in);
+    public static void input(){
+
+        try {
+            while (true) {
+                int a = sc.nextInt();
+                System.out.println(a);
+                if(a == 1){}
+                if(a == 2){}
+                if(a == 000){
+                    break;
+                }
+            }
+        }catch (Exception e){
+            input();
+        }
     }
 }

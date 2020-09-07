@@ -19,7 +19,11 @@ public class UserDO {
     private boolean isAdmin;
 
     public UserDO() {
-        this("guest", "guest", null, null, null, null, null, null, null);
+        this("guest", "guest");
+    }
+
+    public UserDO(String userName, String password){
+        this(userName, password, null, null, null, null, null, null, null);
     }
 
     public UserDO(String userName, String password, BigDecimal favorite1, BigDecimal favorite2, BigDecimal favorite3, BigDecimal favorite4, BigDecimal favorite5, Date register, Date lastDate) {

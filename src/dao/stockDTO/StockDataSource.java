@@ -50,6 +50,8 @@ public class StockDataSource {
             while((temp=bufIn.readLine()) != null){
                 stringBuffer.append(temp);
             }
+
+            bufIn.close();
             return stringBuffer.toString();
         }else{
             return null;

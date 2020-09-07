@@ -31,12 +31,14 @@ public interface CreateTable {
             if (rs.next()) t = true;
 
         }catch (IOException | SQLException e){
-            conn.rollback();
+            if(conn != null) conn.rollback();
             throw e;
         }finally {
-            predStmt.clearParameters();
-            predStmt.close();
-            conn.close();
+            if(predStmt != null) {
+                predStmt.clearParameters();
+                predStmt.close();
+            }
+            if(conn != null) conn.close();
         }
         return t;
     }
@@ -51,8 +53,10 @@ public interface CreateTable {
         }catch (IOException | SQLException e){
             throw e;
         }finally {
-            stmt.close();
-            conn.close();
+            if(stmt != null) {
+                stmt.close();
+            }
+            if(conn != null) conn.close();
         }
     }
     default void dropTable(String tableName) throws IOException, SQLException {
@@ -66,8 +70,10 @@ public interface CreateTable {
         }catch (IOException | SQLException e){
             throw e;
         }finally {
-            stmt.close();
-            conn.close();
+            if(stmt != null) {
+                stmt.close();
+            }
+            if(conn != null) conn.close();
         }
     }
     default void truncateTable(String tableName)throws IOException, SQLException {
@@ -81,8 +87,10 @@ public interface CreateTable {
         }catch (IOException | SQLException e){
             throw e;
         }finally {
-            stmt.close();
-            conn.close();
+            if(stmt != null) {
+                stmt.close();
+            }
+            if(conn != null) conn.close();
         }
     }
 }
