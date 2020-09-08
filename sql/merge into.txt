@@ -1,0 +1,29 @@
+merge into stock_days s1
+using (select * from stock_days) s2
+on (s1.stockno = s2.stockno and s1.day = s2.day)
+when matched then update set (trade_volume=?, transation=?, h_price=?, l_price=?, opening_price=?, closing_price=?)
+when not matched then insert (trade_volume, transation, h_price, l_price, opening_price, closing_price, day)
+values (?, ?, ?, ?, ?, ?, ?);
+
+
+create procedure
+    REPLACE_INTO(
+    arg1 in numeric,
+    arg2 in numeric,
+    arg3 in numeric,
+    arg4 in numeric,
+    arg5 in numeric,
+    arg6 in numeric,
+    arg7 in numeric,
+    arg8 in date)
+as
+begin
+    merge into stock_days s1
+    using dual
+    on (s1.stockno = arg1 and s1.day = arg8)
+    when matched then
+        update set trade_volume=arg2 , transation=arg3, h_price=arg4, l_price=arg5, opening_price=arg6, closing_price=arg7
+    when not matched then
+        insert (trade_volume, transation, h_price, l_price, opening_price, closing_price, day)
+        values (arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+end;

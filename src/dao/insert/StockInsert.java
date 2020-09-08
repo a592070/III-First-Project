@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -45,26 +46,29 @@ public class StockInsert {
     public boolean insert(String sDate) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException {
         boolean isSuccess = false;
 
-        PreparedStatement predStmt = null;
+        CallableStatement callStmt = null;
         try {
             List<StockDayDO> stockDaysList = new StockDataSource(sDate, sStockNo).getStockDaysList();
             conn = dataSource.getConnection();
-            predStmt = conn.prepareStatement(sql);
+
+            callStmt = conn.prepareCall("{call replace_into(?,?,?,?,?,?,?,?)}");
             for (StockDayDO stockDayDO : stockDaysList) {
 
-                predStmt.setBigDecimal(1, stockDayDO.getStockNo());
-                predStmt.setBigDecimal(2, stockDayDO.getTradeVolume());
-                predStmt.setBigDecimal(3, stockDayDO.getTransAction());
-                predStmt.setBigDecimal(4, stockDayDO.getHighestPrice());
-                predStmt.setBigDecimal(5, stockDayDO.getLowestPrice());
-                predStmt.setBigDecimal(6, stockDayDO.getOpeningPrice());
-                predStmt.setBigDecimal(7, stockDayDO.getClosingPrice());
-                predStmt.setDate(8, stockDayDO.getDate());
 
-                predStmt.addBatch();
-                predStmt.clearParameters();
+                callStmt.setBigDecimal(1, stockDayDO.getStockNo());
+                callStmt.setBigDecimal(2, stockDayDO.getTradeVolume());
+                callStmt.setBigDecimal(3, stockDayDO.getTransAction());
+                callStmt.setBigDecimal(4, stockDayDO.getHighestPrice());
+                callStmt.setBigDecimal(5, stockDayDO.getLowestPrice());
+                callStmt.setBigDecimal(6, stockDayDO.getOpeningPrice());
+                callStmt.setBigDecimal(7, stockDayDO.getClosingPrice());
+                callStmt.setDate(8, stockDayDO.getDate());
+
+                callStmt.addBatch();
+                callStmt.clearParameters();
+
             }
-            predStmt.executeBatch();
+            callStmt.executeBatch();
 
             conn.commit();
             isSuccess = true;
@@ -72,10 +76,10 @@ public class StockInsert {
             if(conn != null) conn.rollback();
             throw e;
         }finally {
-            if(predStmt != null) {
-                predStmt.clearParameters();
-                predStmt.clearBatch();
-                predStmt.close();
+            if(callStmt != null){
+                callStmt.clearParameters();
+                callStmt.clearBatch();
+                callStmt.close();
             }
             if(conn != null) conn.close();
         }

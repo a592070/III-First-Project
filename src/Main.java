@@ -25,15 +25,16 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException {
 
-        StockService stockService = new StockService("2330");
+        StockService stockService = new StockService("3008");
 
         List<StockDayDO> list = stockService.getList();
 //        System.out.println(list);
 //        List<StockDayDO> list1 = stockService.getStockByDate("2020-09-01");
 //        System.out.println(list1);
 
-        stockService.updateData();
-
+//        stockService.updateData("20200801");
+        list = stockService.getStockByDate("2020-08-15", "2020-09-03");
+        list.forEach(ele-> System.out.println(ele));
 
     }
     static Scanner sc = new Scanner(System.in);
