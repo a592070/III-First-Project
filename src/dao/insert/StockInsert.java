@@ -4,6 +4,7 @@ import connections.DBConnectionPool;
 import dao.stockDTO.StockDataSource;
 import pojo.StockDayDO;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -15,32 +16,40 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class StockInsert {
+    private StockDayDO stock;
     private String sDate;
     private String sStockNo;
     private String tableName;
     private String sql;
 
-    public StockInsert(String sStockNo) {
-        this(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")), sStockNo);
+    private DataSource dataSource;
+    private Connection conn;
+
+    public StockInsert(StockDayDO stock) throws IOException {
+        this(LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")), stock);
     }
 
-    public StockInsert(String sDate, String sStockNo) {
+    public StockInsert(String sDate, StockDayDO stock) throws IOException {
         this.sDate = sDate;
-        this.sStockNo = sStockNo;
+        this.stock = stock;
+        this.sStockNo = stock.getStockNo().toString();
         this.tableName = "stock_days".toUpperCase();
-        this.sql = "insert into stock_days(stockno, trade_volume, transation, h_price, l_price, opening_price, closing_price, day) values(?, ?, ?, ?, ?, ?, ?, ?)";
+        this.sql = "insert into stock_days(stockno, trade_volume, transation, h_price, l_price, opening_price, closing_price, day) values(?, ?, ?, ?, ?, ?, ?, ?) where day=?";
+
+        this.dataSource = new DBConnectionPool().getDataSource();
     }
 
-    public void insert() throws IOException, SQLException, KeyManagementException, NoSuchAlgorithmException {
-        insert(this.sDate, this.sStockNo);
+    public boolean insert() throws IOException, SQLException, KeyManagementException, NoSuchAlgorithmException {
+        return insert(this.sDate);
     }
-    public void insert(String sDate, String sStockNo) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException {
-        Connection connection = null;
+    public boolean insert(String sDate) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException {
+        boolean isSuccess = false;
+
         PreparedStatement predStmt = null;
         try {
             List<StockDayDO> stockDaysList = new StockDataSource(sDate, sStockNo).getStockDaysList();
-            connection = new DBConnectionPool().getDataSource().getConnection();
-            predStmt = connection.prepareStatement(sql);
+            conn = dataSource.getConnection();
+            predStmt = conn.prepareStatement(sql);
             for (StockDayDO stockDayDO : stockDaysList) {
 
                 predStmt.setBigDecimal(1, stockDayDO.getStockNo());
@@ -57,9 +66,10 @@ public class StockInsert {
             }
             predStmt.executeBatch();
 
-            connection.commit();
+            conn.commit();
+            isSuccess = true;
         }catch (IOException | SQLException | KeyManagementException | NoSuchAlgorithmException e){
-            if(connection != null) connection.rollback();
+            if(conn != null) conn.rollback();
             throw e;
         }finally {
             if(predStmt != null) {
@@ -67,7 +77,8 @@ public class StockInsert {
                 predStmt.clearBatch();
                 predStmt.close();
             }
-            if(connection != null) connection.close();
+            if(conn != null) conn.close();
         }
+        return isSuccess;
     }
 }

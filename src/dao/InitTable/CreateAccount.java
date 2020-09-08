@@ -3,6 +3,7 @@ package dao.InitTable;
 import connections.DBConnectionPool;
 import dao.insert.UserInsert;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,12 +12,13 @@ public class CreateAccount implements CreateTable{
     private String tableName;
     private String sql;
     private Connection conn;
-    private DBConnectionPool connectionPool;
+    private DataSource dataSource;
 
 
-    public CreateAccount(){
+    public CreateAccount() throws IOException {
         this.tableName = "account".toUpperCase();
         this.sql = "create table "+this.tableName+"(username varchar2(255) not null constraint ACCOUNT_PK primary key, password varchar2(255), isadmin number(1) default 0 not null, favorite1 number(10), favorite2 number(10), favorite3 number(10), favorite4 number(10), favorite5 number(10) , register date, last_update date)";
+        dataSource = new DBConnectionPool().getDataSource();
     }
 
     @Override
@@ -39,11 +41,13 @@ public class CreateAccount implements CreateTable{
 
     @Override
     public void createTable() throws IOException, SQLException {
-        connectionPool = new DBConnectionPool();
-        conn = connectionPool.getDataSource().getConnection();
+        conn = dataSource.getConnection();
         conn.createStatement().execute(sql);
 
         conn.close();
+    }
+    public boolean isExist() throws IOException, SQLException {
+        return isExist(this.tableName);
     }
 
 }

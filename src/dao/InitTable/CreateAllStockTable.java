@@ -19,6 +19,7 @@ public class CreateAllStockTable implements CreateTable{
     private String jsonPath;
     private String tableName;
     private BasicDataSource dataSource;
+    private Connection conn;
 
     public CreateAllStockTable() throws IOException {
         tableName = "stock_total_no".toUpperCase();
@@ -48,7 +49,6 @@ public class CreateAllStockTable implements CreateTable{
     public void createTable() throws SQLException {
         sql = "create table "+this.tableName+"(stockno number(10) not null constraint TABLE_NAME_PK primary key, name varchar2(255), code_isin varchar2(255), date_listed date, industrial_group varchar2(255))";
 
-        Connection conn = null;
         Statement stmt = null;
         try {
             conn = dataSource.getConnection();
@@ -59,9 +59,8 @@ public class CreateAllStockTable implements CreateTable{
             if(conn != null) conn.rollback();
             throw e;
         }finally {
-            if(stmt != null) {
-                stmt.close();
-            }
+            if(stmt != null) stmt.close();
+
             if(conn != null) conn.close();
         }
 
@@ -72,7 +71,6 @@ public class CreateAllStockTable implements CreateTable{
         int insertDataCount;
 
         sql = "insert into "+this.tableName+"(stockno, name, code_isin, date_listed, industrial_group) values(?, ?, ?, ?, ?)";
-        Connection conn = null;
         PreparedStatement predStmt = null;
         try {
             List<StockTotalNoDO> list = readJsonDate();
@@ -132,5 +130,9 @@ public class CreateAllStockTable implements CreateTable{
             list.add(stockTotalNo);
         }
         return list;
+    }
+
+    public boolean isExist() throws IOException, SQLException {
+        return isExist(this.tableName);
     }
 }

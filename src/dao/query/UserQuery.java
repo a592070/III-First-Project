@@ -4,29 +4,33 @@ import connections.DBConnectionPool;
 import org.apache.commons.dbcp2.BasicDataSource;
 import pojo.UserDO;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class UserQuery {
     private boolean isAdmin;
     private String sql;
     private Connection conn;
-    private BasicDataSource dataSource;
+    private DataSource dataSource;
 
     public UserQuery() throws IOException {
         dataSource = new DBConnectionPool().getDataSource();
     }
-
-    public Map<String, UserDO> listUsers() throws IOException, SQLException {
+    // getlists
+    public List<UserDO> listUsers() throws IOException, SQLException {
         conn = dataSource.getConnection();
         sql = "select * from account";
         Statement stmt = conn.createStatement();
         ResultSet resultSet = stmt.executeQuery(sql);
 
-        Map<String, UserDO> userMap = new HashMap<>();
+//        Map<String, UserDO> userMap = new HashMap<>();
+        List<UserDO> list = new ArrayList<>();
 
         while(resultSet.next()){
             UserDO user = new UserDO();
@@ -38,13 +42,15 @@ public class UserQuery {
             user.setFavorite4(resultSet.getBigDecimal("favorite4"));
             user.setFavorite5(resultSet.getBigDecimal("favorite5"));
             user.setRegister(resultSet.getDate("register"));
-            userMap.put(user.getUserName(), user);
+//            userMap.put(user.getUserName(), user);
+            list.add(user);
         }
         resultSet.close();
         stmt.close();
         conn.close();
-        return userMap;
+        return list;
     }
+    // isExist
     public boolean isUserExist(UserDO user) throws IOException, SQLException {
         boolean isExist = false;
         String userName = user.getUserName().toUpperCase();
@@ -83,6 +89,7 @@ public class UserQuery {
         conn.close();
         return this.isAdmin;
     }
+    // get
     public UserDO query(String userName) throws IOException, SQLException {
         sql = "select * from account where username=?";
 

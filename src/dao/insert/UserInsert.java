@@ -6,6 +6,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.omg.CORBA.PRIVATE_MEMBER;
 import pojo.UserDO;
 
+import javax.sql.DataSource;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -17,7 +18,7 @@ import java.time.LocalDate;
 import java.util.Properties;
 
 public class UserInsert {
-    private BasicDataSource dataSource;
+    private DataSource dataSource;
     private String sql;
     private int insertCount;
     private PreparedStatement predStmt = null;
@@ -28,7 +29,7 @@ public class UserInsert {
         sql = "insert into account(username, password, isadmin, register, last_update) values(?, ?, 0, ?, ?)";
     }
 
-    public void insertAdmin() throws SQLException, IOException {
+    public boolean insertAdmin() throws SQLException, IOException {
         sql = "insert into account(username, password, isadmin, register, last_update) values(?, ?, 1, ?, ?)";
 
         Properties prop = new Properties();
@@ -41,9 +42,9 @@ public class UserInsert {
         userAdmin.setPassword(password);
         userAdmin.setAdmin(true);
 
-        insert(userAdmin);
+        return insert(userAdmin);
     }
-    public void insert(UserDO user) throws SQLException, IOException {
+    public boolean insert(UserDO user) throws SQLException, IOException {
         if (!new UserQuery().isUserExist(user)) {
             try {
                 conn = dataSource.getConnection();
@@ -54,6 +55,7 @@ public class UserInsert {
                 predStmt.setDate(4, Date.valueOf(LocalDate.now()));
 
                 insertCount = predStmt.executeUpdate();
+
                 conn.commit();
             } catch (SQLException e) {
                 if(conn != null) conn.rollback();
@@ -66,5 +68,6 @@ public class UserInsert {
                 if(conn != null) conn.close();
             }
         }
+        return insertCount!=0;
     }
 }

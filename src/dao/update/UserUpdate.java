@@ -4,6 +4,7 @@ import connections.DBConnectionPool;
 import org.apache.commons.dbcp2.BasicDataSource;
 import pojo.UserDO;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
@@ -17,14 +18,15 @@ public class UserUpdate {
     private boolean isAdmin;
     private String sql;
     private Connection conn;
-    private BasicDataSource dataSource;
+    private DataSource dataSource;
 
     public UserUpdate(UserDO user) throws IOException {
         this.user = user;
         dataSource = new DBConnectionPool().getDataSource();
     }
 
-    public void update() throws SQLException {
+    public boolean update() throws SQLException {
+        boolean isSuccess = false;
         sql = "update account set password=? favorite1=? favorite2=? favorite3=? favorite4=? favorite5=? last_update=? where username=?";
         PreparedStatement predStmt = null;
         try {
@@ -42,6 +44,8 @@ public class UserUpdate {
 
             predStmt.executeUpdate();
 
+            conn.commit();
+            isSuccess = true;
         }catch (SQLException e){
             if(conn != null) conn.rollback();
             throw e;
@@ -52,5 +56,6 @@ public class UserUpdate {
             }
             if(conn != null) conn.close();
         }
+        return isSuccess;
     }
 }

@@ -1,6 +1,6 @@
 # view
 操作指令
-1. service.login
+1. service.loginService
 2.  
 - 一般用戶
     - 查詢股票(名稱、ID)
