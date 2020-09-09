@@ -16,8 +16,8 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class StockService {
     private StockDayDO stock;
@@ -28,17 +28,19 @@ public class StockService {
         this.sStockNo = sStockNo;
         stock = new StockDayDO();
         stock.setStockNo(new BigDecimal(sStockNo));
-        list = new StockDAOImpl(stock).getLists();
+        list = getList();
     }
 
-    public List<StockDayDO> getList() {
-        return list;
+    public List<StockDayDO> getList() throws IOException, SQLException {
+        return new StockDAOImpl(stock).getLists();
     }
     // yyyy-MM-dd
-    public List<StockDayDO> getStockByDate(String date){
+    public List<StockDayDO> getStockByDate(String date) throws SQLException, NoSuchAlgorithmException, IOException, KeyManagementException {
         return getStockByDate(date, null);
     }
-    public List<StockDayDO> getStockByDate(String beginDate, String endDate){
+    public List<StockDayDO> getStockByDate(String beginDate, String endDate) throws SQLException, NoSuchAlgorithmException, KeyManagementException, IOException {
+        updateData(beginDate);
+
         LocalDate begin = LocalDate.parse(beginDate.subSequence(0, beginDate.length()));
 
         LocalDate end;
@@ -47,6 +49,9 @@ public class StockService {
         }else {
             end = LocalDate.parse(endDate.subSequence(0, endDate.length()));
         }
+        if(end.getMonthValue() != begin.getMonthValue()) updateData(endDate);
+
+        list = getList();
 
         List<StockDayDO> pick = new ArrayList<>();
         for (StockDayDO stockDayDO : list) {
@@ -60,13 +65,89 @@ public class StockService {
     public boolean updateData() throws SQLException, NoSuchAlgorithmException, KeyManagementException, IOException {
         return updateData(null);
     }
-    // yyyyMMdd
-    public boolean updateData(String sMonth) throws IOException, NoSuchAlgorithmException, SQLException, KeyManagementException {
-        return new StockInsert(stock).insert(sMonth);
+    // yyyy-MM-dd to yyyyMMdd
+    public boolean updateData(String sDate) throws IOException, NoSuchAlgorithmException, SQLException, KeyManagementException {
+        if(sDate != null) sDate = sDate.replace("-", "");
+
+        return new StockInsert(stock).insert(sDate);
     }
 
     public void initTable() throws IOException, NoSuchAlgorithmException, SQLException, KeyManagementException {
         new CreateStockDays().init();
     }
 
+    public int delete(String sDate) throws IOException, SQLException {
+        return delete(sDate, sDate);
+    }
+    public int delete(String begin, String end) throws IOException, SQLException {
+        LocalDate beginDate = Date.valueOf(begin).toLocalDate();
+//        LocalDate beginDate1 = beginDate;
+        LocalDate endDate = Date.valueOf(end).toLocalDate();
+
+        List<StockDayDO> removeList = new ArrayList<>();
+
+        int count = 0;
+        while(beginDate.compareTo(endDate) <= 0){
+            if(new StockDAOImpl(stock).remove(beginDate)){
+                ++count;
+            }
+            beginDate = beginDate.plusDays(1);
+        }
+        return count;
+    }
+
+    public StockDayDO showAvg(String sBegin) throws NoSuchAlgorithmException, SQLException, KeyManagementException, IOException {
+        return showAvg(sBegin, null);
+    }
+
+    public StockDayDO showAvg(String sBegin, String sEnd) throws IOException, SQLException, KeyManagementException, NoSuchAlgorithmException {
+        List<StockDayDO> interval = getStockByDate(sBegin, sEnd);
+
+        StockDayDO avg = new StockDayDO();
+
+        BigDecimal tradeVolume = BigDecimal.ZERO;
+        BigDecimal transAction = BigDecimal.ZERO;
+        BigDecimal highestPrice = BigDecimal.ZERO;
+        BigDecimal lowestPrice = BigDecimal.ZERO;
+        BigDecimal openingPrice = BigDecimal.ZERO;
+        BigDecimal closingPrice = BigDecimal.ZERO;
+
+
+        for (StockDayDO ele : interval) {
+            tradeVolume = tradeVolume.add(ele.getTradeVolume());
+            transAction = transAction.add(ele.getTransAction());
+            highestPrice = highestPrice.add(ele.getHighestPrice());
+            lowestPrice = lowestPrice.add(ele.getLowestPrice());
+            openingPrice = openingPrice.add(ele.getOpeningPrice());
+            closingPrice = closingPrice.add(ele.getClosingPrice());
+        }
+        BigDecimal length = BigDecimal.valueOf(interval.size());
+        avg.setTradeVolume(tradeVolume.divide(length, 2, BigDecimal.ROUND_HALF_UP));
+        avg.setTransAction(transAction.divide(length, 2, BigDecimal.ROUND_HALF_UP));
+        avg.setHighestPrice(highestPrice.divide(length, 2, BigDecimal.ROUND_HALF_UP));
+        avg.setLowestPrice(lowestPrice.divide(length, 2, BigDecimal.ROUND_HALF_UP));
+        avg.setOpeningPrice(openingPrice.divide(length, 2, BigDecimal.ROUND_HALF_UP));
+        avg.setClosingPrice(closingPrice.divide(length, 2, BigDecimal.ROUND_HALF_UP));
+
+        avg.setStockNo(interval.get(0).getStockNo());
+        avg.setName(interval.get(0).getName());
+
+        return avg;
+    }
+
+    public List<List<BigDecimal>> openingPriceLine(String sBegin, String sEnd) throws SQLException, NoSuchAlgorithmException, IOException, KeyManagementException {
+        List<StockDayDO> interval = getStockByDate(sBegin, sEnd);
+        List<List<BigDecimal>> opLine = new ArrayList<>();
+
+        BigDecimal openingPrice = interval.get(0).getOpeningPrice();
+        opLine.add(Arrays.asList(openingPrice, BigDecimal.ZERO));
+        for (int i = 1; i < interval.size(); i++) {
+            BigDecimal next = interval.get(i).getOpeningPrice();
+            BigDecimal diff = openingPrice.subtract(next);
+
+            opLine.add(Arrays.asList(next, diff));
+            openingPrice = next;
+        }
+        return opLine;
+    }
 }

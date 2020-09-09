@@ -20,7 +20,7 @@ public class StockDataSource {
     private String sUrl2 = "&date=";
     private String sUrl3 = "&stockNo=";
     private String sUrl;
-    private String sDate;
+    private String sDate;   // yyyyMMdd
     private String sStockNo;
     private String tableName = "STOCK_DAYS_";
 

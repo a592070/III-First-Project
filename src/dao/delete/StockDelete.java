@@ -24,7 +24,7 @@ public class StockDelete {
     }
 
     // sDate format is "yyyyMMdd"
-    public StockDayDO delete(Date date) throws SQLException {
+    public boolean delete(Date date) throws SQLException {
         boolean isSuccess;
 
         sql = "delete from stock_days where stockno=? and day=? ";
@@ -34,8 +34,9 @@ public class StockDelete {
             predStmt.setBigDecimal(1, stock.getStockNo());
             predStmt.setDate(2, date);
 
-            isSuccess = predStmt.execute();
+            predStmt.execute();
 
+            isSuccess =true;
             conn.commit();
         } catch (SQLException e) {
             if(conn != null) conn.rollback();
@@ -47,6 +48,6 @@ public class StockDelete {
             }
             if(conn != null) conn.close();
         }
-        return isSuccess? stock:null;
+        return isSuccess;
     }
 }

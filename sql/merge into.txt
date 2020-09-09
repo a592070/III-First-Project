@@ -18,12 +18,12 @@ create procedure
     arg8 in date)
 as
 begin
-    merge into stock_days s1
+    merge into stock_days
     using dual
-    on (s1.stockno = arg1 and s1.day = arg8)
+    on (stockno = arg1 and day = arg8)
     when matched then
         update set trade_volume=arg2 , transation=arg3, h_price=arg4, l_price=arg5, opening_price=arg6, closing_price=arg7
     when not matched then
-        insert (trade_volume, transation, h_price, l_price, opening_price, closing_price, day)
-        values (arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+        insert (stockno, trade_volume, transation, h_price, l_price, opening_price, closing_price, day)
+        values (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 end;

@@ -46,7 +46,7 @@ public class LoginService {
         return new UserDAOImpl().setElement(user);
     }
 
-    public UserDO remove() throws IOException, SQLException {
+    public boolean remove() throws IOException, SQLException {
         return new UserDelete(user).delete();
     }
 }

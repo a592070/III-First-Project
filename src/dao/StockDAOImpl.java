@@ -59,7 +59,7 @@ public class StockDAOImpl implements DataBaseDAO {
     }
 
     @Override
-    public StockDayDO remove(Object date) throws IOException, SQLException {
+    public boolean remove(Object date) throws IOException, SQLException {
         String sDate = String.valueOf(date);
         return new StockDelete(stock).delete(Date.valueOf(sDate));
     }

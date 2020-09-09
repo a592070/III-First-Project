@@ -52,7 +52,7 @@ public class UserDAOImpl implements DataBaseDAO<pojo.UserDO> {
     }
 
     @Override
-    public UserDO remove(pojo.UserDO ele) throws IOException, SQLException {
+    public boolean remove(pojo.UserDO ele) throws IOException, SQLException {
         return new UserDelete(ele).delete();
     }
 

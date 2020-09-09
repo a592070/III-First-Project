@@ -22,15 +22,15 @@ public class UserDelete {
         dataSource = new DBConnectionPool().getDataSource();
     }
 
-    public UserDO delete() throws SQLException {
+    public boolean delete() throws SQLException {
         boolean isSuccess = false;
         sql = "delete from account where username=?";
         try {
             predStmt = conn.prepareStatement(sql);
             predStmt.setString(1, user.getUserName());
 
-            isSuccess = predStmt.execute();
-
+            predStmt.execute();
+            isSuccess = true;
             conn.commit();
         }catch (SQLException e) {
             if (conn != null) conn.rollback();
@@ -44,6 +44,6 @@ public class UserDelete {
                 conn.close();
             }
         }
-        return isSuccess? user:null;
+        return isSuccess;
     }
 }

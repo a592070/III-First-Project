@@ -20,7 +20,7 @@ public interface DataBaseDAO<E> {
     // addEle
     boolean addElement(E ele) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException;
     // remove
-    E remove(E ele) throws IOException, SQLException;
+    boolean remove(E ele) throws IOException, SQLException;
 
 
     // isEmpty

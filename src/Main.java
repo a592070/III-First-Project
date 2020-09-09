@@ -10,6 +10,7 @@ import pojo.UserDO;
 import service.StockService;
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.rmi.server.ExportException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -33,8 +34,18 @@ public class Main {
 //        System.out.println(list1);
 
 //        stockService.updateData("20200801");
-        list = stockService.getStockByDate("2020-08-15", "2020-09-03");
-        list.forEach(ele-> System.out.println(ele));
+        list = stockService.getStockByDate("2020-08-01", "2020-09-03");
+
+//        int count = stockService.delete("2020-08-15", "2020-09-10");
+//        list.forEach(ele-> System.out.println(ele));
+//        System.out.println(count);
+
+//        StockDayDO avg = stockService.showAvg("2020-08-01", "2020-09-03");
+//        System.out.println(avg);
+
+        List<List<BigDecimal>> line = stockService.openingPriceLine("2020-08-01", "2020-09-03");
+        System.out.println(line);
+
 
     }
     static Scanner sc = new Scanner(System.in);
