@@ -4,16 +4,12 @@ import pojo.StockTotalNoDO;
 import service.StockService;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -32,6 +28,9 @@ public class AllStockNoComponent extends Box {
     private JTable jTable;
     private TableModel tableModel;
     private JScrollPane jScrollPane;
+
+    private JTextField input;
+
     private Map<String, List<StockTotalNoDO>> map;
     private List<StockTotalNoDO> listAll;
     private String sStockNo;
@@ -47,13 +46,15 @@ public class AllStockNoComponent extends Box {
         JPanel inputPanel = new JPanel();
         inputPanel.setMaximumSize(new Dimension(WIDTH, 50));
 
-        JTextField input = new JTextField(50);
+        input = new JTextField(50);
         input.setFont(new Font(null, Font.PLAIN, 20));
         input.setToolTipText("輸入代號 或關鍵字");
         JLabel label = new JLabel("輸入代號 或關鍵字");
         label.setFont(new Font(null, Font.PLAIN, 20));
         JButton inputButton = new JButton("確認");
         inputButton.setFont(new Font(null, Font.PLAIN, 20));
+
+        inputButton.addActionListener(new ActionAllStockEvent(ActionAllStockEvent.APPROXIMATE_SEARCH));
 
         inputPanel.add(label, BorderLayout.WEST);
         inputPanel.add(input, BorderLayout.CENTER);
@@ -68,7 +69,7 @@ public class AllStockNoComponent extends Box {
             String name = sGroups[i];
             JButton button = new JButton(name);
             button.setFont(new Font(null, Font.PLAIN, 20));
-            button.addActionListener(new ActionClick(sGroups[i]));
+            button.addActionListener(new ActionAllStockEvent(ActionAllStockEvent.SELECT_GROUP, sGroups[i]));
             groupPanel.add(button);
         }
         this.add(groupPanel);
@@ -107,7 +108,7 @@ public class AllStockNoComponent extends Box {
 
     }
     private List<StockTotalNoDO> settingList() throws IOException, SQLException {
-        if(listAll==null) listAll = new StockService("").getAllStockNoList();
+        if(listAll==null) listAll =StockService.getAllStockNoList();
         return listAll;
     }
 
@@ -132,17 +133,35 @@ public class AllStockNoComponent extends Box {
 
     }
 
-    class ActionClick implements ActionListener {
+    class ActionAllStockEvent implements ActionListener {
+        static final int SELECT_GROUP = 1;
+        static final int APPROXIMATE_SEARCH = 2;
+
+        int listenEvent;
         String str;
-        public ActionClick(String str) {
+        public ActionAllStockEvent(int listenEvent) {
+            this(listenEvent, "");
+        }
+        public ActionAllStockEvent(int listenEvent , String str){
             this.str = str;
+            this.listenEvent = listenEvent;
         }
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            switch (listenEvent){
+                case SELECT_GROUP:
+                    selectGroup();
+                    break;
+                case APPROXIMATE_SEARCH:
+                    approximateSearch();
+                    break;
+            }
+        }
+        private void selectGroup(){
             if(map == null) {
                 try {
-                    map = new StockService("").getAllStockNo();
+                    map = StockService.getAllStockNo();
                 } catch (IOException|SQLException e1) {
                     e1.printStackTrace();
                     JOptionPane.showMessageDialog(null, "出現異常錯誤!");
@@ -151,7 +170,19 @@ public class AllStockNoComponent extends Box {
             List<StockTotalNoDO> filterList = map.get(str);
             settingTableDate(filterList);
             ((AbstractTableModel)tableModel).fireTableDataChanged();
+        }
+        private void approximateSearch() {
+            List<StockTotalNoDO> tempList;
+            try {
+                tempList = StockService.approximateSearch(input.getText());
+                List<StockTotalNoDO> filterList = new ArrayList<>();
 
+                settingTableDate(tempList);
+            } catch (IOException|SQLException e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+            }
+            ((AbstractTableModel)tableModel).fireTableDataChanged();
         }
     }
 }

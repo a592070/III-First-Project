@@ -1,3 +1,4 @@
+import dao.stockDTO.StockDataSource;
 import pojo.StockTotalNoDO;
 import service.StockService;
 import view.Login;
@@ -35,11 +36,15 @@ public class Main {
 //        System.out.println(line);
 
 //        new Login().init();
-        Map<String, List<StockTotalNoDO>> map = new StockService("2330").getAllStockNo();
+//        Map<String, List<StockTotalNoDO>> map = new StockService("2330").getAllStockNo();
 
 //        map.forEach((k,v)-> System.out.println(k));
 //        System.out.println(map.size());
-        System.out.println(map.keySet());
+//        System.out.println(map.keySet());
+
+        String json = new StockDataSource("20200910", "3008").getJson();
+        System.out.println(json);
+
     }
     static Scanner sc = new Scanner(System.in);
     public static void input(){

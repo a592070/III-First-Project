@@ -41,9 +41,21 @@ public class StockService {
         if(list == null) getList();
     }
 
-    public static StockDayDO approximateSearch(String description){
+    public static List<StockTotalNoDO> approximateSearch(String description) throws IOException, SQLException {
+        if(StringUtil.isEmpty(description)) return null;
+        getAllStockNoList();
+        List<StockTotalNoDO> tempList = new ArrayList<>();
 
-
+        for (StockTotalNoDO ele : listAll) {
+            String no = ele.getStockNo().toString();
+            String name = ele.getName();
+            if (no.contains(description) || description.contains(no)) {
+                tempList.add(ele);
+            }else if(name.contains(description) || description.contains(name)){
+                tempList.add(ele);
+            }
+        }
+        return tempList;
     }
 
     public List<StockDayDO> getList() throws IOException, SQLException {
@@ -51,11 +63,11 @@ public class StockService {
         return list;
     }
 
-    public Map<String, List<StockTotalNoDO>> getAllStockNo() throws IOException, SQLException {
+    public static Map<String, List<StockTotalNoDO>> getAllStockNo() throws IOException, SQLException {
         if(map==null) map = new StockQuery(null).getAllStockNo();
         return map;
     }
-    public List<StockTotalNoDO> getAllStockNoList() throws IOException, SQLException {
+    public static List<StockTotalNoDO> getAllStockNoList() throws IOException, SQLException {
         if(listAll == null){
             getAllStockNo();
             listAll = new ArrayList<>();
@@ -65,9 +77,11 @@ public class StockService {
     }
 
     // yyyy-MM-dd
+    // return this month data
     public List<StockDayDO> getStockByDate(String date) throws SQLException, NoSuchAlgorithmException, IOException, KeyManagementException {
         return getStockByDate(date, null);
     }
+    // return interval date
     public List<StockDayDO> getStockByDate(String beginDate, String endDate) throws SQLException, NoSuchAlgorithmException, KeyManagementException, IOException {
         updateData(beginDate);
 

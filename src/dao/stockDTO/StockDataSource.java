@@ -5,10 +5,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import pojo.StockDayDO;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
@@ -16,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StockDataSource {
+    // https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20200910&stockNo=2330
+    private String surl = "https://www.twse.com.tw/exchangeReport/STOCK_DAY";
     private String sUrl1 = "https://www.twse.com.tw/en/exchangeReport/STOCK_DAY?response=json";
     private String sUrl2 = "&date=";
     private String sUrl3 = "&stockNo=";
@@ -40,8 +44,17 @@ public class StockDataSource {
     }
     public String getJson() throws NoSuchAlgorithmException, KeyManagementException, IOException {
         SslUtils.ignoreSSL();
-        HttpURLConnection conn = (HttpURLConnection) new URL(sUrl).openConnection();
+
+
+        HttpsURLConnection conn = (HttpsURLConnection) new URL(surl).openConnection();
+
+        conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36");
+
+        conn.setRequestProperty("response", "json");
+        conn.setRequestProperty("date", sDate);
+        conn.setRequestProperty("stockNo", sStockNo);
         conn.setRequestMethod("GET");
+        conn.connect();
         if(conn.getResponseCode() == 200){
             BufferedReader bufIn = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             StringBuffer stringBuffer = new StringBuffer();

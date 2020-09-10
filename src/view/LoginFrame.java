@@ -125,10 +125,10 @@ public class LoginFrame {
     }
 
     class ActionLogin implements ActionListener{
-        static final int LOGIN_ACTION = 0;
-        static final int CANCEL_ACTION = 1;
-        static final int REGISTER_ACTION = 2;
-        static final int RESET_IMG = 3;
+        static final int LOGIN_ACTION = 1;
+        static final int CANCEL_ACTION = 2;
+        static final int REGISTER_ACTION = 3;
+        static final int RESET_IMG = 4;
         private int action;
         public ActionLogin(int action) {
             this.action = action;
