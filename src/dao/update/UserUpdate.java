@@ -22,7 +22,7 @@ public class UserUpdate {
 
     public UserUpdate(UserDO user) throws IOException {
         this.user = user;
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
     }
 
     public boolean update() throws SQLException {

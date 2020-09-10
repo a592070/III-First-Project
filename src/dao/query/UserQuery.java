@@ -20,7 +20,7 @@ public class UserQuery {
     private DataSource dataSource;
 
     public UserQuery() throws IOException {
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
     }
     // getlists
     public List<UserDO> listUsers() throws IOException, SQLException {

@@ -1,40 +1,28 @@
-import dao.DataBaseDAO;
-import dao.InitTable.CreateAccount;
-import dao.InitTable.CreateAllStockTable;
-import dao.InitTable.CreateStockDays;
-import dao.InitTable.CreateTable;
-import dao.query.StockQuery;
-import dao.query.UserQuery;
-import pojo.StockDayDO;
-import pojo.UserDO;
+import pojo.StockTotalNoDO;
 import service.StockService;
+import view.Login;
 
 import java.io.*;
-import java.math.BigDecimal;
-import java.rmi.server.ExportException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
-import java.sql.Date;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException {
 
-        StockService stockService = new StockService("3008");
+//        StockService stockService = new StockService("3008");
 
-        List<StockDayDO> list = stockService.getList();
+//        List<StockDayDO> list = stockService.getList();
 //        System.out.println(list);
 //        List<StockDayDO> list1 = stockService.getStockByDate("2020-09-01");
 //        System.out.println(list1);
 
 //        stockService.updateData("20200801");
-        list = stockService.getStockByDate("2020-08-01", "2020-09-03");
+//        list = stockService.getStockByDate("2020-08-01", "2020-09-03");
 
 //        int count = stockService.delete("2020-08-15", "2020-09-10");
 //        list.forEach(ele-> System.out.println(ele));
@@ -43,10 +31,15 @@ public class Main {
 //        StockDayDO avg = stockService.showAvg("2020-08-01", "2020-09-03");
 //        System.out.println(avg);
 
-        List<List<BigDecimal>> line = stockService.openingPriceLine("2020-08-01", "2020-09-03");
-        System.out.println(line);
+//        List<List<BigDecimal>> line = stockService.openingPriceLine("2020-08-01", "2020-09-03");
+//        System.out.println(line);
 
+//        new Login().init();
+        Map<String, List<StockTotalNoDO>> map = new StockService("2330").getAllStockNo();
 
+//        map.forEach((k,v)-> System.out.println(k));
+//        System.out.println(map.size());
+        System.out.println(map.keySet());
     }
     static Scanner sc = new Scanner(System.in);
     public static void input(){

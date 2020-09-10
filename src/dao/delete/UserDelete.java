@@ -19,7 +19,7 @@ public class UserDelete {
 
     public UserDelete(UserDO user) throws IOException {
         this.user = user;
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
     }
 
     public boolean delete() throws SQLException {

@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Properties;
 
 public class UserInsert {
@@ -25,7 +26,7 @@ public class UserInsert {
     private Connection conn = null;
 
     public UserInsert() throws IOException {
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
         sql = "insert into account(username, password, isadmin, register, last_update) values(?, ?, 0, ?, ?)";
     }
 
@@ -45,29 +46,29 @@ public class UserInsert {
         return insert(userAdmin);
     }
     public boolean insert(UserDO user) throws SQLException, IOException {
-        if (!new UserQuery().isUserExist(user)) {
-            try {
-                conn = dataSource.getConnection();
-                predStmt = conn.prepareStatement(sql);
-                predStmt.setString(1, user.getUserName());
-                predStmt.setString(2, user.getPassword());
-                predStmt.setDate(3, Date.valueOf(LocalDate.now()));
-                predStmt.setDate(4, Date.valueOf(LocalDate.now()));
+        boolean isInsert = false;
+        try {
+            conn = dataSource.getConnection();
+            predStmt = conn.prepareStatement(sql);
+            predStmt.setString(1, user.getUserName());
+            predStmt.setString(2, user.getPassword());
+            predStmt.setDate(3, new Date(System.currentTimeMillis()));
+            predStmt.setDate(4, new Date(System.currentTimeMillis()));
 
-                insertCount = predStmt.executeUpdate();
+            insertCount = predStmt.executeUpdate();
 
-                conn.commit();
-            } catch (SQLException e) {
-                if(conn != null) conn.rollback();
-                throw e;
-            } finally {
-                if(predStmt != null) {
-                    predStmt.clearParameters();
-                    predStmt.close();
-                }
-                if(conn != null) conn.close();
+            isInsert = true;
+            conn.commit();
+        } catch (SQLException e) {
+            if(conn != null) conn.rollback();
+            throw e;
+        } finally {
+            if(predStmt != null) {
+                predStmt.clearParameters();
+                predStmt.close();
             }
+            if(conn != null) conn.close();
         }
-        return insertCount!=0;
+        return isInsert;
     }
 }

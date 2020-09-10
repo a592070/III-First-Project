@@ -13,21 +13,37 @@ public class LoginService {
     private String userName;
     private String password;
     private UserDO user;
-    private List<UserDO> list;
+    private static List<UserDO> list;
 
     public LoginService(String userName , String password) throws IOException, SQLException {
-        this.userName = userName;
+        this.userName = userName.toUpperCase();
         this.password = password;
         user = new UserDO(this.userName, this.password);
-        list = new UserQuery().listUsers();
+        if(list == null)getList();
     }
+
 
     public LoginService() throws IOException, SQLException {
         this("guest" , "guest");
     }
 
+    public List<UserDO> getList() throws IOException, SQLException {
+        list = new UserQuery().listUsers();
+        return list;
+    }
+
+    public boolean login(){
+        for (UserDO ele : list) {
+            if(userName.equals(ele.getUserName()) && password.equals(ele.getPassword())) return true;
+        }
+        return false;
+    }
+
     public boolean isRegistered(){
-        return list.stream().anyMatch(ele -> ele.getUserName() == this.userName);
+        for (UserDO ele : list) {
+            if(userName.equals(ele.getUserName())) return true;
+        }
+        return false;
     }
 
     public boolean register() throws IOException, SQLException {
@@ -35,7 +51,9 @@ public class LoginService {
     }
     public boolean register(boolean isAdmin) throws IOException, SQLException {
         if(isAdmin) user.setAdmin(true);
-        return new UserDAOImpl().addElement(user);
+        boolean b = new UserDAOImpl().addElement(user);
+        getList();
+        return b;
     }
 
     public boolean isAdmin(){
@@ -43,10 +61,14 @@ public class LoginService {
     }
 
     public boolean updateUser(UserDO user) throws IOException, SQLException {
-        return new UserDAOImpl().setElement(user);
+        boolean b = new UserDAOImpl().setElement(user);
+        getList();
+        return b;
     }
 
     public boolean remove() throws IOException, SQLException {
-        return new UserDelete(user).delete();
+        boolean b = new UserDelete(user).delete();
+        getList();
+        return b;
     }
 }

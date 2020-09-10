@@ -18,7 +18,7 @@ public class CreateAccount implements CreateTable{
     public CreateAccount() throws IOException {
         this.tableName = "account".toUpperCase();
         this.sql = "create table "+this.tableName+"(username varchar2(255) not null constraint ACCOUNT_PK primary key, password varchar2(255), isadmin number(1) default 0 not null, favorite1 number(10), favorite2 number(10), favorite3 number(10), favorite4 number(10), favorite5 number(10) , register date, last_update date)";
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
     }
 
     @Override

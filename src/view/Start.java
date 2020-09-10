@@ -1,6 +1,7 @@
-package View;
+package view;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Start {
     public static void main(String[] args) {
@@ -8,7 +9,7 @@ public class Start {
 
         frame.add(new MainPanel());
 
-
+        frame.setBackground(Color.LIGHT_GRAY);
         frame.setVisible(true);
         frame.setBounds(0,0,900,725);
         // 窗口大小固定

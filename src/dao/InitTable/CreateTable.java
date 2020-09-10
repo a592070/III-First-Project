@@ -23,7 +23,7 @@ public interface CreateTable {
         Connection conn = null;
         PreparedStatement predStmt = null;
         try {
-            conn = new DBConnectionPool().getDataSource().getConnection();
+            conn = DBConnectionPool.getDataSource().getConnection();
 
             predStmt = conn.prepareStatement(query);
             predStmt.setString(1, tableName);
@@ -47,7 +47,7 @@ public interface CreateTable {
         Connection conn = null;
         Statement stmt = null;
         try{
-            conn = new DBConnectionPool().getDataSource().getConnection();
+            conn = DBConnectionPool.getDataSource().getConnection();
             stmt = conn.createStatement();
             stmt.execute(sql);
         }catch (IOException | SQLException e){
@@ -64,7 +64,7 @@ public interface CreateTable {
         Connection conn = null;
         Statement stmt = null;
         try{
-            conn = new DBConnectionPool().getDataSource().getConnection();
+            conn = DBConnectionPool.getDataSource().getConnection();
             stmt = conn.createStatement();
             stmt.execute(sql);
         }catch (IOException | SQLException e){
@@ -81,7 +81,7 @@ public interface CreateTable {
         Connection conn = null;
         Statement stmt = null;
         try{
-            conn = new DBConnectionPool().getDataSource().getConnection();
+            conn = DBConnectionPool.getDataSource().getConnection();
             stmt = conn.createStatement();
             stmt.execute(sql);
         }catch (IOException | SQLException e){

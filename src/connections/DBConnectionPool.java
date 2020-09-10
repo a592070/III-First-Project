@@ -20,7 +20,7 @@ public class DBConnectionPool {
     private int sAis_batch_num;
     private String sAutoCommit;
 
-    public DBConnectionPool() throws IOException {
+    private DBConnectionPool() throws IOException {
     }
 
     public void init() throws IOException {
@@ -56,9 +56,11 @@ public class DBConnectionPool {
         dataSource.setDefaultAutoCommit(false);
 
     }
-    public BasicDataSource getDataSource() throws IOException {
-        if(dataSource == null) init();
-        return this.dataSource;
+    public static BasicDataSource getDataSource() throws IOException {
+        if(dataSource == null) {
+            new DBConnectionPool().init();
+        }
+        return dataSource;
     }
 
 }

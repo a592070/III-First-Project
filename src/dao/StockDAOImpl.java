@@ -6,6 +6,7 @@ import dao.insert.StockInsert;
 import dao.query.StockQuery;
 import dao.update.StockUpdate;
 import pojo.StockDayDO;
+import pojo.StockTotalNoDO;
 import pojo.UserDO;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class StockDAOImpl implements DataBaseDAO {
@@ -68,4 +70,5 @@ public class StockDAOImpl implements DataBaseDAO {
     public boolean isEmpty() throws IOException, SQLException {
         return new CreateStockDays().isExist();
     }
+
 }

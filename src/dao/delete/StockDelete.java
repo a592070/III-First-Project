@@ -20,7 +20,7 @@ public class StockDelete {
     public StockDelete(StockDayDO stock) throws IOException {
         this.stock = stock;
 
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
     }
 
     // sDate format is "yyyyMMdd"

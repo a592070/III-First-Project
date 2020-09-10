@@ -24,7 +24,7 @@ public class CreateAllStockTable implements CreateTable{
     public CreateAllStockTable() throws IOException {
         tableName = "stock_total_no".toUpperCase();
         jsonPath = "resources/STOCK_TOTAL_NO.json";
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
     }
 
     @Override

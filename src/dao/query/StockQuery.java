@@ -3,18 +3,13 @@ package dao.query;
 import connections.DBConnectionPool;
 import org.apache.commons.dbcp2.BasicDataSource;
 import pojo.StockDayDO;
+import pojo.StockTotalNoDO;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.sql.*;
+import java.util.*;
 
 public class StockQuery {
     private DataSource dataSource;
@@ -25,7 +20,7 @@ public class StockQuery {
 
     public StockQuery(StockDayDO stock) throws IOException {
         this.stock = stock;
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
     }
     public List<StockDayDO> query() throws SQLException {
         sql = "select d.stockno, t.name, d.trade_volume, d.transation, d.h_price, d.l_price, d.opening_price, d.closing_price, d.day from stock_days d, stock_total_no t where d.stockno=? and d.stockno=t.stockno";
@@ -73,6 +68,37 @@ public class StockQuery {
         ResultSet rs = predStmt.executeQuery();
         if(rs.next()) return true;
         return false;
+    }
+
+    public Map<String, List<StockTotalNoDO>> getAllStockNo() throws SQLException {
+        sql = "select * from stock_total_no order by industrial_group";
+        conn = dataSource.getConnection();
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+
+        Map<String, List<StockTotalNoDO>> map = new HashMap<>();
+        List<StockTotalNoDO> list = new ArrayList<>();
+        String temp = "";
+        while(rs.next()){
+            StockTotalNoDO totalNoDO = new StockTotalNoDO();
+            totalNoDO.setStockNo(rs.getBigDecimal("stockno"));
+            totalNoDO.setName(rs.getString("name"));
+            totalNoDO.setCodeISIN(rs.getString("code_isin"));
+            totalNoDO.setDataListed(rs.getDate("date_listed"));
+
+            String nowGroup = rs.getString("industrial_group");
+            totalNoDO.setGroup(nowGroup);
+
+            if(!nowGroup.equals(temp)) list = new ArrayList<>();
+            list.add(totalNoDO);
+            map.put(nowGroup, list);
+            temp = nowGroup;
+        }
+
+
+        stmt.close();
+        conn.close();
+        return map;
     }
 
 

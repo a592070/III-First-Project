@@ -25,7 +25,7 @@ public class CreateStockDays implements CreateTable{
 
     public CreateStockDays() throws IOException {
         this.tableName = "stock_days".toUpperCase();
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
     }
 
     @Override

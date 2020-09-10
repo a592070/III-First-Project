@@ -3,8 +3,10 @@ package service;
 import dao.InitTable.CreateStockDays;
 import dao.StockDAOImpl;
 import dao.insert.StockInsert;
+import dao.query.StockQuery;
 import dao.update.StockUpdate;
 import pojo.StockDayDO;
+import pojo.StockTotalNoDO;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -20,20 +22,48 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class StockService {
+    private static List<StockDayDO> list;
+    private static List<StockTotalNoDO> listAll;
+    private static Map<String, List<StockTotalNoDO>> map;
     private StockDayDO stock;
-    private List<StockDayDO> list;
     private String sStockNo;
 
     public StockService(String sStockNo) throws IOException, SQLException {
-        this.sStockNo = sStockNo;
         stock = new StockDayDO();
-        stock.setStockNo(new BigDecimal(sStockNo));
-        list = getList();
+        if(!StringUtil.isEmpty(sStockNo)){
+            this.sStockNo = sStockNo;
+            stock.setStockNo(new BigDecimal(sStockNo));
+        }
+        if(list == null) getList();
+    }
+    public StockService(StockDayDO stock) throws IOException, SQLException {
+        this.stock = stock;
+        if(list == null) getList();
+    }
+
+    public static StockDayDO approximateSearch(String description){
+
+
     }
 
     public List<StockDayDO> getList() throws IOException, SQLException {
-        return new StockDAOImpl(stock).getLists();
+        list = new StockDAOImpl(stock).getLists();
+        return list;
     }
+
+    public Map<String, List<StockTotalNoDO>> getAllStockNo() throws IOException, SQLException {
+        if(map==null) map = new StockQuery(null).getAllStockNo();
+        return map;
+    }
+    public List<StockTotalNoDO> getAllStockNoList() throws IOException, SQLException {
+        if(listAll == null){
+            getAllStockNo();
+            listAll = new ArrayList<>();
+            map.values().forEach(ele->listAll.addAll(ele));
+        }
+        return listAll;
+    }
+
     // yyyy-MM-dd
     public List<StockDayDO> getStockByDate(String date) throws SQLException, NoSuchAlgorithmException, IOException, KeyManagementException {
         return getStockByDate(date, null);
@@ -51,7 +81,7 @@ public class StockService {
         }
         if(end.getMonthValue() != begin.getMonthValue()) updateData(endDate);
 
-        list = getList();
+        getList();
 
         List<StockDayDO> pick = new ArrayList<>();
         for (StockDayDO stockDayDO : list) {
@@ -69,11 +99,14 @@ public class StockService {
     public boolean updateData(String sDate) throws IOException, NoSuchAlgorithmException, SQLException, KeyManagementException {
         if(sDate != null) sDate = sDate.replace("-", "");
 
-        return new StockInsert(stock).insert(sDate);
+        boolean b = new StockInsert(stock).insert(sDate);
+        getList();
+        return b;
     }
 
     public void initTable() throws IOException, NoSuchAlgorithmException, SQLException, KeyManagementException {
         new CreateStockDays().init();
+        getList();
     }
 
     public int delete(String sDate) throws IOException, SQLException {
@@ -93,6 +126,8 @@ public class StockService {
             }
             beginDate = beginDate.plusDays(1);
         }
+
+        getList();
         return count;
     }
 

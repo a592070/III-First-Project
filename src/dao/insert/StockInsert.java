@@ -37,7 +37,7 @@ public class StockInsert {
         this.tableName = "stock_days".toUpperCase();
         this.sql = "insert into stock_days(stockno, trade_volume, transation, h_price, l_price, opening_price, closing_price, day) values(?, ?, ?, ?, ?, ?, ?, ?) where day=?";
 
-        this.dataSource = new DBConnectionPool().getDataSource();
+        this.dataSource = DBConnectionPool.getDataSource();
     }
 
     public boolean insert() throws IOException, SQLException, KeyManagementException, NoSuchAlgorithmException {

@@ -19,7 +19,7 @@ public class StockUpdate {
 
     public StockUpdate(StockDayDO stock) throws IOException {
         this.stock = stock;
-        dataSource = new DBConnectionPool().getDataSource();
+        dataSource = DBConnectionPool.getDataSource();
     }
     public boolean update() throws SQLException {
         sql = "update stock_days set trade_volume=?, transation=?, h_price=?, l_price=?, opening_price=?, closing_price=? where stockno=?, day=?";
