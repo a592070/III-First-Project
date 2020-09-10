@@ -19,20 +19,19 @@ import java.util.List;
 
 public class StockDataSource {
     // https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20200910&stockNo=2330
-    private String surl = "https://www.twse.com.tw/exchangeReport/STOCK_DAY";
+//    private String surl = "https://www.twse.com.tw/exchangeReport/STOCK_DAY";
     private String sUrl1 = "https://www.twse.com.tw/en/exchangeReport/STOCK_DAY?response=json";
     private String sUrl2 = "&date=";
     private String sUrl3 = "&stockNo=";
     private String sUrl;
     private String sDate;   // yyyyMMdd
     private String sStockNo;
-    private String tableName = "STOCK_DAYS_";
+
 
     public StockDataSource(String sDate, String sStockNo) {
         this.sDate = sDate;
         this.sStockNo = sStockNo;
         sUrl = sUrl1+sUrl2+sDate+sUrl3+sStockNo;
-        tableName+=sStockNo;
     }
     public List<StockDayDO> getStockDaysList() throws IOException, KeyManagementException, NoSuchAlgorithmException {
         String json = getJson();
@@ -43,16 +42,20 @@ public class StockDataSource {
         return beans;
     }
     public String getJson() throws NoSuchAlgorithmException, KeyManagementException, IOException {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         SslUtils.ignoreSSL();
 
-
-        HttpsURLConnection conn = (HttpsURLConnection) new URL(surl).openConnection();
+        HttpsURLConnection conn = (HttpsURLConnection) new URL(sUrl).openConnection();
 
         conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36");
 
-        conn.setRequestProperty("response", "json");
-        conn.setRequestProperty("date", sDate);
-        conn.setRequestProperty("stockNo", sStockNo);
+//        conn.setRequestProperty("response", "json");
+//        conn.setRequestProperty("date", sDate);
+//        conn.setRequestProperty("stockNo", sStockNo);
         conn.setRequestMethod("GET");
         conn.connect();
         if(conn.getResponseCode() == 200){
@@ -65,8 +68,10 @@ public class StockDataSource {
             }
 
             bufIn.close();
+            conn.disconnect();
             return stringBuffer.toString();
         }else{
+            conn.disconnect();
             return null;
         }
     }

@@ -156,6 +156,8 @@ public class AllStockNoComponent extends Box {
                 case APPROXIMATE_SEARCH:
                     approximateSearch();
                     break;
+                default:
+                    break;
             }
         }
         private void selectGroup(){

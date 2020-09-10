@@ -58,8 +58,12 @@ public class StockService {
         return tempList;
     }
 
-    public List<StockDayDO> getList() throws IOException, SQLException {
-        list = new StockDAOImpl(stock).getLists();
+    public static List<StockDayDO> getList() throws IOException, SQLException {
+        if(list == null)list = new StockDAOImpl().getLists();
+        return list;
+    }
+    public List<StockDayDO> updateList() throws IOException, SQLException {
+        list = new StockDAOImpl().getLists();
         return list;
     }
 
@@ -114,13 +118,13 @@ public class StockService {
         if(sDate != null) sDate = sDate.replace("-", "");
 
         boolean b = new StockInsert(stock).insert(sDate);
-        getList();
+        updateList();
         return b;
     }
 
     public void initTable() throws IOException, NoSuchAlgorithmException, SQLException, KeyManagementException {
         new CreateStockDays().init();
-        getList();
+        updateList();
     }
 
     public int delete(String sDate) throws IOException, SQLException {
@@ -141,7 +145,7 @@ public class StockService {
             beginDate = beginDate.plusDays(1);
         }
 
-        getList();
+        updateList();
         return count;
     }
 

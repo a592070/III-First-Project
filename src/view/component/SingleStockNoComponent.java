@@ -3,12 +3,15 @@ package view.component;
 import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
 import service.StockService;
+import service.StringUtil;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -29,8 +32,9 @@ public class SingleStockNoComponent extends Box{
 
     private String sStockNo;
     private String sStockDescript;
-    private List<StockDayDO> allList;
-    private List<StockTotalNoDO> tempList;
+    private List<StockDayDO> list;
+    private List<StockDayDO> currList;
+    private List<StockTotalNoDO> listStackNo;
 
     private Vector<String> tableTitle;
     private Vector<Vector> tableDate;
@@ -42,7 +46,9 @@ public class SingleStockNoComponent extends Box{
         super(BoxLayout.Y_AXIS);
         this.sStockDescript = sStock;
         approximateSearch();
-        updateList();
+        getAllList();
+        getCurrentList();
+
 
         JPanel inputPanel = new JPanel();
         inputPanel.setMaximumSize(new Dimension(WIDTH, 50));
@@ -50,10 +56,13 @@ public class SingleStockNoComponent extends Box{
         input = new JTextField(50);
         input.setFont(new Font(null, Font.PLAIN, 20));
         input.setToolTipText("輸入代號 或關鍵字");
+
         JLabel label = new JLabel("輸入代號 或關鍵字");
         label.setFont(new Font(null, Font.PLAIN, 20));
+
         JButton inputButton = new JButton("確認");
         inputButton.setFont(new Font(null, Font.PLAIN, 20));
+        inputButton.addActionListener(new ActionSingleStockEvent(ActionSingleStockEvent.INPUT_NO));
 
         inputPanel.add(label, BorderLayout.WEST);
         inputPanel.add(input, BorderLayout.CENTER);
@@ -62,8 +71,22 @@ public class SingleStockNoComponent extends Box{
 
 
 
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setMaximumSize(new Dimension(WIDTH, 80));
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-        settingTableDate(allList);
+        JButton buttonUpdate = new JButton("更新資料");
+        JButton buttonShowAll = new JButton("顯示全部");
+
+        buttonUpdate.addActionListener(new ActionSingleStockEvent(ActionSingleStockEvent.UPDATE_LIST));
+        buttonShowAll.addActionListener(new ActionSingleStockEvent(ActionSingleStockEvent.SHOW_ALL));
+
+        buttonPanel.add(buttonUpdate);
+        buttonPanel.add(buttonShowAll);
+
+
+
+        settingTableDate(currList);
 
         tableModel = new DefaultTableModel(tableDate, tableTitle);
 
@@ -92,21 +115,44 @@ public class SingleStockNoComponent extends Box{
     }
     private void approximateSearch() {
         try {
-            tempList = StockService.approximateSearch(this.sStockDescript);
+            listStackNo = StockService.approximateSearch(this.sStockDescript);
         } catch (IOException|SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "出現異常錯誤!");
         }
     }
-    private void updateList(){
+    private  void getAllList() {
         try {
-            if (tempList != null || tempList.size()==0) {
-                StockService service = null;
-                for (StockTotalNoDO stock : tempList) {
-                    service = new StockService(stock.getStockNo().toString());
-                    service.updateData();
-                }
-                allList = service.getList();
+            list = StockService.getList();
+        } catch (IOException|SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+        }
+    }
+    private void getCurrentList(){
+        currList = new ArrayList<>();
+        if (listStackNo != null || listStackNo.size()!=0 || list == null) {
+            List<String> collection = new ArrayList<>();
+            listStackNo.forEach(ele -> {
+                collection.add(ele.getStockNo().toString());
+                collection.add(ele.getName());
+            });
+
+            list.stream().filter(ele -> collection.contains(ele.getStockNo().toString()) || collection.contains(ele.getName()))
+                    .forEach(ele -> currList.add(ele));
+        }
+    }
+    private void updateList(){
+        // form input text
+        String no = null;
+        String beginDate = null;
+        String endDate = null;
+        try {
+            if (StringUtil.isEmpty(no)) {
+                StockService service = new StockService(no);
+                service.updateData();
+
+                list = service.getList();
             }
         }catch (IOException|SQLException|NoSuchAlgorithmException|KeyManagementException e){
             e.printStackTrace();
@@ -135,6 +181,38 @@ public class SingleStockNoComponent extends Box{
             vectorData.add(ele.getDate());
             tableDate.add(vectorData);
         });
+        ((AbstractTableModel)tableModel).fireTableDataChanged();
+    }
 
+    class ActionSingleStockEvent implements ActionListener{
+        static final int INPUT_NO = 1;
+        static final int UPDATE_LIST = 2;
+        static final int SHOW_ALL = 3;
+
+        private int type;
+        public ActionSingleStockEvent(int type) {
+            this.type = type;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            switch (this.type){
+                case INPUT_NO:
+                    sStockDescript = input.getText();
+                    approximateSearch();
+                    getCurrentList();
+                    settingTableDate(currList);
+                    break;
+                case UPDATE_LIST:
+
+                    break;
+                case SHOW_ALL:
+                    getAllList();
+                    settingTableDate(list);
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 }

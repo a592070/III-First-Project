@@ -20,17 +20,29 @@ import java.util.Map;
 import java.util.Objects;
 
 public class StockDAOImpl implements DataBaseDAO {
+    public static int QUERY_TARGET;
+    public static int QUERY_ALL;
+
+
     private StockDayDO stock;
     private List<StockDayDO> list;
 
     public StockDAOImpl(StockDayDO stock) {
         this.stock = stock;
     }
+    public StockDAOImpl(){}
+
 
     @Override
     public List<StockDayDO> getLists() throws IOException, SQLException {
-        return new StockQuery(stock).query();
+        return new StockQuery(stock).queryAll();
     }
+//    public List<StockDayDO> getTargetList() throws IOException, SQLException {
+//        return new StockQuery(stock).query();
+//    }
+//    public List<StockDayDO> getAllList() throws IOException, SQLException {
+//
+//    }
 
     @Override
     public StockDayDO getElement(String date) throws IOException, SQLException {
