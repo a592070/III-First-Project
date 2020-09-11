@@ -1,9 +1,11 @@
-import dao.stockDTO.StockDataSource;
+import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
-import service.StockService;
-import view.Login;
+import service.StockServiceHttp;
+import sun.net.www.protocol.http.HttpURLConnection;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
@@ -13,7 +15,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException {
+    public static void main(String[] args) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
 
 //        StockService stockService = new StockService("3008");
 
@@ -42,8 +44,39 @@ public class Main {
 //        System.out.println(map.size());
 //        System.out.println(map.keySet());
 
-        String json = new StockDataSource("20200910", "3008").getJson();
-        System.out.println(json);
+//        String json = new StockDataSource("20200910", "3008").getJson();
+//        System.out.println(json);
+
+//        List<UserDO> list = new LoginService().getList();
+//        List<StockDayDO> list = StockService.getList();
+//        String s = JsonUtil.listDO2Json(list, JsonUtil.ANALYTIC_STACKDO);
+//        System.out.println(s);
+
+//        URL url = new URL("http://localhost:8080/UserLogin");
+//        HttpURLConnection conn = (HttpURLConnection) new URL("http://192.168.1.163:8080/UserLogin").openConnection();
+//        HttpURLConnection conn = (HttpURLConnection) new URL("http://localhost:8080/AllStockInfo").openConnection();
+//        HttpURLConnection conn = (HttpURLConnection) new URL("http://localhost:8080/AllStockData").openConnection();
+
+//        conn.setRequestProperty("Content-Type", "application/json");
+//
+//        conn.setRequestProperty("username", "abcd");
+//        conn.setRequestProperty("password", "abcd");
+//        conn.setRequestProperty("reqType", "map");
+//        conn.setRequestMethod("GET");
+//        conn.connect();
+//
+//        BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+//
+//        String s;
+//        while((s=br.readLine()) != null){
+//            System.out.println(s);
+//        }
+
+//        List<StockDayDO> list = new StockServiceHttp().getList();
+//        System.out.println(list);
+
+        Map<String, List<StockTotalNoDO>> allStockNo = new StockServiceHttp().getAllStockNo();
+        System.out.println(allStockNo);
 
     }
     static Scanner sc = new Scanner(System.in);

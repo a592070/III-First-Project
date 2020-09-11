@@ -19,7 +19,7 @@ public class ManagerFrame {
     final int WIDTH = 1600;
     final int HEIGHT = 900;
 
-    private String inputStock;
+    public static String inputStock;
 
 
     public void init(){
@@ -79,33 +79,23 @@ public class ManagerFrame {
                 Object lastPathComponent = e.getNewLeadSelectionPath().getLastPathComponent();
 
                 if(stockNoNode.equals(lastPathComponent)){
+                    inputStock = null;
                     jSplitPane.setRightComponent(new AllStockNoComponent());
                     jSplitPane.setDividerLocation(150);
 
                 }else if(stockDataNode.equals(lastPathComponent)){
                     if(inputStock == null) inputStock = JOptionPane.showInputDialog("輸入股票代號 或 名稱");
 
-                    jSplitPane.setRightComponent(new SingleStockNoComponent(inputStock));
+                    jSplitPane.setRightComponent(new SingleStockNoComponent());
                     jSplitPane.setDividerLocation(150);
                 }else if(stockStatsNode.equals(lastPathComponent)){
-                    jSplitPane.setRightComponent(new JLabel("股票分析"));
+                    jSplitPane.setRightComponent(new JLabel("股票分析...持續更新中"));
                     jSplitPane.setDividerLocation(150);
                 }
             }
         });
-        jTree.addTreeWillExpandListener(new TreeWillExpandListener() {
-            @Override
-            public void treeWillExpand(TreeExpansionEvent event) throws ExpandVetoException {
-                if(inputStock == null) inputStock = JOptionPane.showInputDialog("輸入股票代號 或 名稱");
-                System.out.println(inputStock);
-            }
 
-            @Override
-            public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
-                inputStock = null;
-                System.out.println(inputStock);
-            }
-        });
+
 
 
 
@@ -118,6 +108,7 @@ public class ManagerFrame {
 
         jf.setVisible(true);
     }
+
 
     public static void main(String[] args) {
         new ManagerFrame().init();

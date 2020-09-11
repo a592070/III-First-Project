@@ -1,7 +1,11 @@
 package pojo;
 
+import com.alibaba.fastjson.JSONArray;
+
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StockDayDO {
     private String name;
@@ -114,5 +118,18 @@ public class StockDayDO {
                 ", openingPrice=" + openingPrice +
                 ", closingPrice=" + closingPrice +
                 ']';
+    }
+    public JSONArray toJsonArray(){
+        String data = "[" + "\"" + name + "\"" + ","+
+                "\"" + String.valueOf(stockNo) + "\"" +","+
+                "\"" + String.valueOf(date) + "\"" +","+
+                "\"" + String.valueOf(tradeVolume) + "\"" +","+
+                "\"" + String.valueOf(transAction) + "\"" +","+
+                "\"" + String.valueOf(highestPrice) + "\"" +","+
+                "\"" + String.valueOf(lowestPrice) + "\"" +","+
+                "\"" + String.valueOf(openingPrice) + "\"" +","+
+                "\"" + String.valueOf(closingPrice) + "\"" +"]";
+
+        return JSONArray.parseArray(data);
     }
 }

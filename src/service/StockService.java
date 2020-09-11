@@ -4,9 +4,9 @@ import dao.InitTable.CreateStockDays;
 import dao.StockDAOImpl;
 import dao.insert.StockInsert;
 import dao.query.StockQuery;
-import dao.update.StockUpdate;
 import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
+import utils.StringUtil;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -14,19 +14,15 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class StockService {
-    private static List<StockDayDO> list;
-    private static List<StockTotalNoDO> listAll;
-    private static Map<String, List<StockTotalNoDO>> map;
-    private StockDayDO stock;
-    private String sStockNo;
+    protected static List<StockDayDO> list;
+    protected static List<StockTotalNoDO> listAll;
+    protected static Map<String, List<StockTotalNoDO>> map;
+    protected StockDayDO stock;
+    protected String sStockNo;
 
     public StockService(String sStockNo) throws IOException, SQLException {
         stock = new StockDayDO();
@@ -39,6 +35,9 @@ public class StockService {
     public StockService(StockDayDO stock) throws IOException, SQLException {
         this.stock = stock;
         if(list == null) getList();
+    }
+
+    public StockService() {
     }
 
     public static List<StockTotalNoDO> approximateSearch(String description) throws IOException, SQLException {

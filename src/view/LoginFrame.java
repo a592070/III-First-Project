@@ -1,7 +1,8 @@
 package view;
 
 import service.LoginService;
-import service.StringUtil;
+import service.LoginServiceHttp;
+import utils.StringUtil;
 import view.component.RandNumImage;
 
 import javax.swing.*;
@@ -169,7 +170,8 @@ public class LoginFrame {
                 return;
             }
             try {
-                LoginService service = new LoginService(userName, password);
+//                LoginService service = new LoginService(userName, password);
+                LoginService service = new LoginServiceHttp(userName, password);
                 boolean isLogin = service.login();
                 if(isLogin && checkNum.equals(inputCkNum)){
                     JOptionPane.showMessageDialog(null, "歡迎回來! "+userName);
@@ -181,6 +183,7 @@ public class LoginFrame {
                 }else{
                     JOptionPane.showMessageDialog(null, "帳號、密碼或驗證碼錯誤!");
                     passwordField.setText("");
+                    ckField.setText("");
                 }
 
             } catch (IOException|SQLException e) {
@@ -196,16 +199,19 @@ public class LoginFrame {
 
             if(StringUtil.isEmpty(userName) || StringUtil.isEmpty(password) || !checkNum.equals(inputCkNum)){
                 JOptionPane.showMessageDialog(null, "帳號、密碼或驗證碼錯誤!");
+                cancelClick();
                 resetImg();
                 return;
             }
             try {
-                LoginService service = new LoginService(userName, password);
+//                LoginService service = new LoginService(userName, password);
+                LoginService service = new LoginServiceHttp(userName, password);
                 boolean isRegister = service.isRegistered();
                 if(!isRegister){
                     if(service.register()) {
                         JOptionPane.showMessageDialog(null, "註冊成功 " + userName+" ，請重新登錄");
                         passwordField.setText("");
+                        ckField.setText("");
                     }else{
                         JOptionPane.showMessageDialog(null, "請重新確認");
                         cancelClick();

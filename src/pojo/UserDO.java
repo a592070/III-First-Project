@@ -1,10 +1,13 @@
 package pojo;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.parser.JSONLexerBase;
+
 import java.io.FileReader;
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 
 public class UserDO {
     private String userName;
@@ -147,5 +150,19 @@ public class UserDO {
                 ", lastDate=" + lastDate +
                 ", isAdmin=" + isAdmin +
                 ']';
+    }
+    public JSONArray toJsonArray(){
+        String data = "[" + "\"" + userName + "\"" + ","+
+                "\"" + password + "\"" + "," +
+                "\"" + String.valueOf(favorite1) + "\"" +","+
+                "\"" + String.valueOf(favorite2) + "\"" +","+
+                "\"" + String.valueOf(favorite3) + "\"" +","+
+                "\"" + String.valueOf(favorite4) + "\"" +","+
+                "\"" + String.valueOf(favorite5) + "\"" +","+
+                "\"" + String.valueOf(register) + "\"" +","+
+                "\"" + String.valueOf(lastDate) + "\"" +","+
+                "\"" + String.valueOf(isAdmin) + "\"" +"]";
+
+        return JSONArray.parseArray(data);
     }
 }

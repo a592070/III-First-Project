@@ -2,6 +2,8 @@ package view.component;
 
 import pojo.StockTotalNoDO;
 import service.StockService;
+import service.StockServiceHttp;
+import service.StockServiceInterface;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -108,7 +110,8 @@ public class AllStockNoComponent extends Box {
 
     }
     private List<StockTotalNoDO> settingList() throws IOException, SQLException {
-        if(listAll==null) listAll =StockService.getAllStockNoList();
+//        if(listAll==null) listAll =StockService.getAllStockNoList();
+        if(listAll==null) listAll = new StockServiceHttp().getAllStockNoList();
         return listAll;
     }
 
@@ -163,8 +166,9 @@ public class AllStockNoComponent extends Box {
         private void selectGroup(){
             if(map == null) {
                 try {
-                    map = StockService.getAllStockNo();
-                } catch (IOException|SQLException e1) {
+//                    map = StockService.getAllStockNo();
+                    map = new StockServiceHttp().getAllStockNo();
+                } catch (IOException e1) {
                     e1.printStackTrace();
                     JOptionPane.showMessageDialog(null, "出現異常錯誤!");
                 }
@@ -176,7 +180,8 @@ public class AllStockNoComponent extends Box {
         private void approximateSearch() {
             List<StockTotalNoDO> tempList;
             try {
-                tempList = StockService.approximateSearch(input.getText());
+//                tempList = StockService.approximateSearch(input.getText());
+                tempList = new StockServiceHttp().approximateSearch(input.getText());
                 List<StockTotalNoDO> filterList = new ArrayList<>();
 
                 settingTableDate(tempList);

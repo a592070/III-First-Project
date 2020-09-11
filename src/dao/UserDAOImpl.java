@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-public class UserDAOImpl implements DataBaseDAO<pojo.UserDO> {
+public class UserDAOImpl implements DataBaseDAO<UserDO> {
     private UserDO user;
 
     public UserDAOImpl(UserDO user) {
@@ -24,12 +24,12 @@ public class UserDAOImpl implements DataBaseDAO<pojo.UserDO> {
     }
 
     @Override
-    public List<pojo.UserDO> getLists() throws IOException, SQLException {
+    public List<UserDO> getLists() throws IOException, SQLException {
         return new UserQuery().listUsers();
     }
 
     @Override
-    public pojo.UserDO getElement(String id) throws IOException, SQLException {
+    public UserDO getElement(String id) throws IOException, SQLException {
         return new UserQuery().query(id);
     }
 
@@ -42,17 +42,17 @@ public class UserDAOImpl implements DataBaseDAO<pojo.UserDO> {
     }
 
     @Override
-    public boolean setElement(pojo.UserDO ele) throws IOException, SQLException {
+    public boolean setElement(UserDO ele) throws IOException, SQLException {
         return new UserUpdate(ele).update();
     }
 
     @Override
-    public boolean addElement(pojo.UserDO ele) throws IOException, SQLException {
+    public boolean addElement(UserDO ele) throws IOException, SQLException {
         return new UserInsert().insert(ele);
     }
 
     @Override
-    public boolean remove(pojo.UserDO ele) throws IOException, SQLException {
+    public boolean remove(UserDO ele) throws IOException, SQLException {
         return new UserDelete(ele).delete();
     }
 

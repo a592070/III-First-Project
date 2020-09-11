@@ -1,7 +1,11 @@
 package pojo;
 
+import com.alibaba.fastjson.JSONArray;
+
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StockTotalNoDO {
     /**
@@ -73,5 +77,14 @@ public class StockTotalNoDO {
                 ", dataListed=" + dataListed +
                 ", group='" + group + '\'' +
                 '}';
+    }
+    public JSONArray toJsonArray(){
+        String data = "[" + "\"" + String.valueOf(stockNo) + "\"" + ","+
+                "\"" + name + "\"" +","+
+                "\"" + codeISIN + "\"" +","+
+                "\"" + String.valueOf(dataListed) + "\"" +","+
+                "\"" + group + "\"" + "]";
+
+        return JSONArray.parseArray(data);
     }
 }

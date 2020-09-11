@@ -32,14 +32,14 @@ public class LoginService {
         return list;
     }
 
-    public boolean login(){
+    public boolean login() throws IOException {
         for (UserDO ele : list) {
             if(userName.equals(ele.getUserName()) && password.equals(ele.getPassword())) return true;
         }
         return false;
     }
 
-    public boolean isRegistered(){
+    public boolean isRegistered() throws IOException {
         for (UserDO ele : list) {
             if(userName.equals(ele.getUserName())) return true;
         }

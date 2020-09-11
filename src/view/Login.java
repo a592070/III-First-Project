@@ -1,7 +1,7 @@
 package view;
 
 import service.LoginService;
-import service.StringUtil;
+import utils.StringUtil;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;

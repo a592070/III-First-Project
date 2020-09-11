@@ -3,7 +3,10 @@ package view.component;
 import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
 import service.StockService;
-import service.StringUtil;
+import service.StockServiceHttp;
+import service.StockServiceInterface;
+import utils.StringUtil;
+import view.ManagerFrame;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -13,6 +16,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -42,9 +46,9 @@ public class SingleStockNoComponent extends Box{
 
     private String[] sTitle = {"代號", "名稱", "成交股數", "成交筆數", "最高價", "最低價", "開盤價", "收盤價", "日期"};
 
-    public SingleStockNoComponent(String sStock){
+    public SingleStockNoComponent(){
         super(BoxLayout.Y_AXIS);
-        this.sStockDescript = sStock;
+        this.sStockDescript = ManagerFrame.inputStock;
         approximateSearch();
         getAllList();
         getCurrentList();
@@ -83,6 +87,7 @@ public class SingleStockNoComponent extends Box{
 
         buttonPanel.add(buttonUpdate);
         buttonPanel.add(buttonShowAll);
+        this.add(buttonPanel);
 
 
 
@@ -115,7 +120,9 @@ public class SingleStockNoComponent extends Box{
     }
     private void approximateSearch() {
         try {
-            listStackNo = StockService.approximateSearch(this.sStockDescript);
+//            listStackNo = StockService.approximateSearch(this.sStockDescript);
+            listStackNo = new StockServiceHttp().approximateSearch(this.sStockDescript);
+
         } catch (IOException|SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "出現異常錯誤!");
@@ -123,8 +130,9 @@ public class SingleStockNoComponent extends Box{
     }
     private  void getAllList() {
         try {
-            list = StockService.getList();
-        } catch (IOException|SQLException e) {
+//            list = StockService.getList();
+            list = new StockServiceHttp().getList();
+        } catch (IOException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "出現異常錯誤!");
         }
@@ -149,14 +157,23 @@ public class SingleStockNoComponent extends Box{
         String endDate = null;
         try {
             if (StringUtil.isEmpty(no)) {
-                StockService service = new StockService(no);
-                service.updateData();
+//                StockService service = new StockService(no);
+                StockServiceInterface service = new StockServiceHttp(no);
+//                service.updateData();
 
                 list = service.getList();
             }
-        }catch (IOException|SQLException|NoSuchAlgorithmException|KeyManagementException e){
+        }catch (IOException|SQLException e){
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
         }
     }
     private void settingTableDate(List<StockDayDO> lis){
@@ -181,7 +198,7 @@ public class SingleStockNoComponent extends Box{
             vectorData.add(ele.getDate());
             tableDate.add(vectorData);
         });
-        ((AbstractTableModel)tableModel).fireTableDataChanged();
+
     }
 
     class ActionSingleStockEvent implements ActionListener{
@@ -199,6 +216,7 @@ public class SingleStockNoComponent extends Box{
             switch (this.type){
                 case INPUT_NO:
                     sStockDescript = input.getText();
+                    ManagerFrame.inputStock = sStockDescript;
                     approximateSearch();
                     getCurrentList();
                     settingTableDate(currList);
@@ -213,6 +231,7 @@ public class SingleStockNoComponent extends Box{
                 default:
                     break;
             }
+            ((AbstractTableModel)tableModel).fireTableDataChanged();
         }
     }
 }
