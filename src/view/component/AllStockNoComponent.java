@@ -1,9 +1,7 @@
 package view.component;
 
 import pojo.StockTotalNoDO;
-import service.StockService;
 import service.StockServiceHttp;
-import service.StockServiceInterface;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;

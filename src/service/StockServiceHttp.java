@@ -3,43 +3,41 @@ package service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import dao.StockDAOImpl;
-import org.apache.commons.codec.binary.StringUtils;
 import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
 import utils.HttpUtil;
 import utils.StringUtil;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
-public class StockServiceHttp extends StockServiceInterface{
+public class StockServiceHttp extends StockServiceSuper {
     private static final String sUrlAllStockData = "http://localhost:8080/AllStockData";
     private static final String sUrlAllStockInfo = "http://localhost:8080/AllStockInfo";
+    private static final String sUrlUpdateStock = "http://localhost:8080/InsertData";
 
 //    private static List<StockDayDO> list;
 //    private static List<StockTotalNoDO> listAll;
 //    private static Map<String, List<StockTotalNoDO>> map;
 
 
-    public StockServiceHttp(String sStockNo) throws IOException, SQLException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+    public StockServiceHttp(String sStockNo) throws IOException, SQLException {
+        if(list == null) getList();
         super.stock = new StockDayDO();
         if(!StringUtil.isEmpty(sStockNo)){
             super.sStockNo = sStockNo;
             super.stock.setStockNo(new BigDecimal(sStockNo));
+
+            Optional<StockDayDO> first = list.stream().filter(ele -> ele.getStockNo().compareTo(new BigDecimal(sStockNo)) == 0).findFirst();
+            super.stock.setName(first.get().getName());
         }
-        if(list == null) getList();
     }
 
     public StockServiceHttp() {
@@ -50,8 +48,10 @@ public class StockServiceHttp extends StockServiceInterface{
         if(map == null){
             map = new HashMap<>();
 
-            String mapJson = HttpUtil.getInfo2(sUrlAllStockInfo, HttpUtil.reqType, "map");
-            JSONObject jsonObject = JSON.parseObject(mapJson);
+            String result = HttpUtil.getInfo2(sUrlAllStockInfo, HttpUtil.reqType, "map");
+            if(StringUtil.isEmpty(result)) return map;
+
+            JSONObject jsonObject = JSON.parseObject(result);
             JSONArray fields = jsonObject.getJSONArray("field");
             JSONArray datas = jsonObject.getJSONArray("data");
 
@@ -83,12 +83,13 @@ public class StockServiceHttp extends StockServiceInterface{
 
     @Override
     public List<StockTotalNoDO> getAllStockNoList() throws IOException {
-        if(listAll != null){
+        if(listAll == null){
             listAll = new ArrayList<>();
 
-            String listJson = HttpUtil.getInfo2(sUrlAllStockInfo, HttpUtil.reqType, "list");
+            String result = HttpUtil.getInfo2(sUrlAllStockInfo, HttpUtil.reqType, "list");
+            if(StringUtil.isEmpty(result)) return listAll;
 
-            JSONObject jsonObject = JSON.parseObject(listJson);
+            JSONObject jsonObject = JSON.parseObject(result);
             JSONArray data = jsonObject.getJSONArray("data");
 
             // stockNo, name, codeISIN, dataListed, group
@@ -113,9 +114,10 @@ public class StockServiceHttp extends StockServiceInterface{
     public List<StockDayDO> updateList() throws IOException {
         list = new ArrayList<>();
 
-        String listJson = HttpUtil.getInfo1(sUrlAllStockData);
-        JSONObject jsonObject = JSON.parseObject(listJson);
+        String result = HttpUtil.getInfo1(sUrlAllStockData);
+        if(StringUtil.isEmpty(result)) return list;
 
+        JSONObject jsonObject = JSON.parseObject(result);
         JSONArray data = jsonObject.getJSONArray("data");
         List<String> stringList = data.toJavaList(String.class);
 
@@ -137,5 +139,21 @@ public class StockServiceHttp extends StockServiceInterface{
             list.add(stockDayDO);
         }
         return list;
+    }
+
+    @Override
+    public boolean updateData(String sDate) throws IOException, NoSuchAlgorithmException, SQLException, KeyManagementException {
+        if(StringUtil.isEmpty(sDate)){
+            sDate = LocalDate.now().toString();
+        }
+        sDate = sDate.replace("-", "");
+
+        String result = HttpUtil.getInfo3(sUrlUpdateStock, HttpUtil.stockno, sStockNo, HttpUtil.date, sDate);
+        if(StringUtil.isEmpty(result)) return false;
+
+        JSONObject jsonObject = JSON.parseObject(result);
+        String isSuccess = jsonObject.getString("isSuccess");
+
+        return Objects.equals(isSuccess, "true");
     }
 }

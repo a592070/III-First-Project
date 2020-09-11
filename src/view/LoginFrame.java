@@ -18,6 +18,8 @@ public class LoginFrame {
     final int WIDTH = 800;
     final int HEIGHT = 450;
 
+    private String username;
+
     private JTextField userField;
     private JPasswordField passwordField;
 
@@ -176,8 +178,10 @@ public class LoginFrame {
                 if(isLogin && checkNum.equals(inputCkNum)){
                     JOptionPane.showMessageDialog(null, "歡迎回來! "+userName);
 
+                    username = userName;
+
                     // 進入主畫面
-                    new ManagerFrame().init();
+                    new ManagerFrame().init(username);
                     // 當前畫面消失
                     jf.dispose();
                 }else{

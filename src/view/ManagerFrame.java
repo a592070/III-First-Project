@@ -20,12 +20,16 @@ public class ManagerFrame {
     final int HEIGHT = 900;
 
     public static String inputStock;
+    private String userName;
 
 
-    public void init(){
+
+    public void init(String userName){
         jf.setBounds(0,0,WIDTH,HEIGHT);
         jf.setResizable(false);
         jf.setLocationRelativeTo(null); // 居中顯示
+
+        this.userName = userName;
 
         // Setting menu
         JMenuBar jmBar = new JMenuBar();
@@ -64,11 +68,11 @@ public class ManagerFrame {
         DefaultMutableTreeNode stockNoNode = new DefaultMutableTreeNode("台股代號總表");
         DefaultMutableTreeNode stockDataNode = new DefaultMutableTreeNode("個股資料");
 //        DefaultMutableTreeNode stockDataNode1 = new DefaultMutableTreeNode("每月個股資料");
-        DefaultMutableTreeNode stockStatsNode = new DefaultMutableTreeNode("股票分析");
+        DefaultMutableTreeNode stockStatisticsNode = new DefaultMutableTreeNode("股票分析");
 
         stockRoot.add(stockNoNode);
         stockRoot.add(stockDataNode);
-        stockRoot.add(stockStatsNode);
+        stockRoot.add(stockStatisticsNode);
 //        stockDataNode.add(stockDataNode1);
 //        stockDataNode.add(stockStatsNode1);
 
@@ -79,16 +83,16 @@ public class ManagerFrame {
                 Object lastPathComponent = e.getNewLeadSelectionPath().getLastPathComponent();
 
                 if(stockNoNode.equals(lastPathComponent)){
-                    inputStock = null;
+//                    inputStock = null;
                     jSplitPane.setRightComponent(new AllStockNoComponent());
                     jSplitPane.setDividerLocation(150);
 
                 }else if(stockDataNode.equals(lastPathComponent)){
-                    if(inputStock == null) inputStock = JOptionPane.showInputDialog("輸入股票代號 或 名稱");
+//                    if(inputStock == null) inputStock = JOptionPane.showInputDialog("輸入股票代號 或 名稱");
 
-                    jSplitPane.setRightComponent(new SingleStockNoComponent());
+                    jSplitPane.setRightComponent(new SingleStockNoComponent(jf));
                     jSplitPane.setDividerLocation(150);
-                }else if(stockStatsNode.equals(lastPathComponent)){
+                }else if(stockStatisticsNode.equals(lastPathComponent)){
                     jSplitPane.setRightComponent(new JLabel("股票分析...持續更新中"));
                     jSplitPane.setDividerLocation(150);
                 }
@@ -111,7 +115,7 @@ public class ManagerFrame {
 
 
     public static void main(String[] args) {
-        new ManagerFrame().init();
+        new ManagerFrame().init(null);
     }
 
 }

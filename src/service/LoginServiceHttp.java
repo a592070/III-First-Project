@@ -3,6 +3,7 @@ package service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import utils.HttpUtil;
+import utils.StringUtil;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -28,8 +29,10 @@ public class LoginServiceHttp extends LoginService{
 
     @Override
     public boolean login() throws IOException {
-        String login = HttpUtil.getInfo4(sUrl, HttpUtil.username, userName, HttpUtil.password, password, HttpUtil.reqType, reqType1);
-        JSONObject jsonObject = JSON.parseObject(login);
+        String result = HttpUtil.getInfo4(sUrl, HttpUtil.username, userName, HttpUtil.password, password, HttpUtil.reqType, reqType1);
+        if(StringUtil.isEmpty(result)) return false;
+
+        JSONObject jsonObject = JSON.parseObject(result);
         String isSuccess = jsonObject.getString("isSuccess");
 
         return Objects.equals(isSuccess, "true");
@@ -37,22 +40,22 @@ public class LoginServiceHttp extends LoginService{
 
     @Override
     public boolean isRegistered() throws IOException {
-        String login = HttpUtil.getInfo4(sUrl, HttpUtil.username, userName, HttpUtil.password, password, HttpUtil.reqType, reqType2);
-        JSONObject jsonObject = JSON.parseObject(login);
+        String result = HttpUtil.getInfo4(sUrl, HttpUtil.username, userName, HttpUtil.password, password, HttpUtil.reqType, reqType2);
+        if(StringUtil.isEmpty(result)) return false;
+
+        JSONObject jsonObject = JSON.parseObject(result);
         String isSuccess = jsonObject.getString("isSuccess");
-        return super.isRegistered();
+        return Objects.equals(isSuccess, "true");
     }
 
     @Override
     public boolean register() throws IOException, SQLException {
-        String login = HttpUtil.getInfo4(sUrl, HttpUtil.username, userName, HttpUtil.password, password, HttpUtil.reqType, reqType3);
-        JSONObject jsonObject = JSON.parseObject(login);
+        String result = HttpUtil.getInfo4(sUrl, HttpUtil.username, userName, HttpUtil.password, password, HttpUtil.reqType, reqType3);
+        if(StringUtil.isEmpty(result)) return false;
+
+        JSONObject jsonObject = JSON.parseObject(result);
         String isSuccess = jsonObject.getString("isSuccess");
-        return super.isRegistered();
+        return Objects.equals(isSuccess, "true");
     }
 
-    @Override
-    public boolean register(boolean isAdmin) throws IOException, SQLException {
-        return super.register(isAdmin);
-    }
 }
