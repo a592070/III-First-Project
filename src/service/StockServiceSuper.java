@@ -1,5 +1,6 @@
 package service;
 
+import org.joda.time.format.DateTimeFormat;
 import pojo.OpenPriceVO;
 import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
@@ -9,11 +10,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public abstract class StockServiceSuper {
     protected static List<StockDayDO> list;
@@ -75,29 +76,51 @@ public abstract class StockServiceSuper {
         return getStockByDate(date, LocalDate.now().toString());
     }
     // return interval date
-    public List<StockDayDO> getStockByDate(String beginDate, String endDate) throws SQLException, NoSuchAlgorithmException, KeyManagementException, IOException {
+    public List<StockDayDO> getStockByDate(String beginDate, String endDate) throws SQLException, IOException, NoSuchAlgorithmException, KeyManagementException {
 
-        updateData(beginDate);
-
-        LocalDate begin = LocalDate.parse(beginDate.subSequence(0, beginDate.length()));
-
+        LocalDate begin = LocalDate.parse(beginDate.subSequence(0, beginDate.length()), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         LocalDate end;
         if(endDate == null){
             end = LocalDate.now();
         }else {
-            end = LocalDate.parse(endDate.subSequence(0, endDate.length()));
+            end = LocalDate.parse(endDate.subSequence(0, endDate.length()), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
-        if(end.getMonthValue() != begin.getMonthValue()) updateData(endDate);
-
-        getList();
-
-        List<StockDayDO> pick = new ArrayList<>();
+        return getStockByDate(begin, end);
+    }
+    public List<StockDayDO> getStockByDate(LocalDate begin, LocalDate end) throws IOException, SQLException, KeyManagementException, NoSuchAlgorithmException {
+        List<StockDayDO> stockNoList = new ArrayList<>();
         for (StockDayDO stockDayDO : list) {
-            if(begin.compareTo(stockDayDO.getDate().toLocalDate()) <= 0 && end.compareTo(stockDayDO.getDate().toLocalDate()) >= 0){
-                pick.add(stockDayDO);
+            if(stockDayDO.getStockNo().toString().equals(sStockNo)){
+                stockNoList.add(stockDayDO);
             }
         }
-        return pick;
+        Collections.sort(stockNoList, new Comparator<StockDayDO>() {
+            @Override
+            public int compare(StockDayDO o1, StockDayDO o2) {
+                return o1.getDate().compareTo(o2.getDate());
+            }
+        });
+
+        if(stockNoList.get(0).getDate().toLocalDate().compareTo(begin) > 0) updateData(begin.toString());
+        if(stockNoList.get(stockNoList.size()-1).getDate().toLocalDate().compareTo(end) < 0) updateData(end.toString());
+
+        updateList();
+
+        stockNoList = new ArrayList<>();
+        for (StockDayDO stockDayDO : list) {
+            if(stockDayDO.getStockNo().toString().equals(sStockNo)){
+                stockNoList.add(stockDayDO);
+            }
+        }
+        Collections.sort(stockNoList, new Comparator<StockDayDO>() {
+            @Override
+            public int compare(StockDayDO o1, StockDayDO o2) {
+                return o1.getDate().compareTo(o2.getDate());
+            }
+        });
+
+
+        return stockNoList;
     }
 
     public StockDayDO showAvg(String sBegin, String sEnd) throws IOException, SQLException, KeyManagementException, NoSuchAlgorithmException {
@@ -135,8 +158,8 @@ public abstract class StockServiceSuper {
         return avg;
     }
 
-    public List<OpenPriceVO> openingPriceLine(String sBegin, String sEnd) throws SQLException, NoSuchAlgorithmException, IOException, KeyManagementException {
-        List<StockDayDO> interval = getStockByDate(sBegin, sEnd);
+    public List<OpenPriceVO> openingPriceLine(LocalDate begin, LocalDate end) throws NoSuchAlgorithmException, SQLException, KeyManagementException, IOException {
+        List<StockDayDO> interval = getStockByDate(begin, end);
         List<OpenPriceVO> opLine = new ArrayList<>();
 
         StockDayDO stockDayDO = interval.get(0);
@@ -146,6 +169,7 @@ public abstract class StockServiceSuper {
         openPriceVO.setName(stockDayDO.getName());
         openPriceVO.setDate(stockDayDO.getDate());
         openPriceVO.setOpenPrice(stockDayDO.getOpeningPrice());
+        openPriceVO.setClosePrice(stockDayDO.getClosingPrice());
         openPriceVO.setDiffOpenPrice(BigDecimal.ZERO);
         openPriceVO.setDiffOCPrice(stockDayDO.getOpeningPrice().subtract(stockDayDO.getClosingPrice()));
 
@@ -154,22 +178,34 @@ public abstract class StockServiceSuper {
         opLine.add(openPriceVO);
         for (int i = 1; i < interval.size(); i++) {
             stockDayDO = interval.get(i);
-            BigDecimal next = stockDayDO.getOpeningPrice();
-            BigDecimal diff = openingPrice.subtract(next);
+            BigDecimal nextOpen = stockDayDO.getOpeningPrice();
+            BigDecimal nextClose = stockDayDO.getClosingPrice();
+            BigDecimal diff = nextOpen.subtract(openingPrice);
 
             openPriceVO = new OpenPriceVO();
 
             openPriceVO.setStockNo(String.valueOf(stockDayDO.getStockNo()));
             openPriceVO.setName(stockDayDO.getName());
             openPriceVO.setDate(stockDayDO.getDate());
-            openPriceVO.setOpenPrice(next);
+            openPriceVO.setOpenPrice(nextOpen);
+            openPriceVO.setClosePrice(nextClose);
             openPriceVO.setDiffOpenPrice(diff);
-            openPriceVO.setDiffOCPrice(stockDayDO.getOpeningPrice().subtract(stockDayDO.getClosingPrice()));
+            openPriceVO.setDiffOCPrice(nextOpen.subtract(nextClose));
 
             opLine.add(openPriceVO);
-            openingPrice = next;
+            openingPrice = nextOpen;
         }
         return opLine;
+    }
+    public List<OpenPriceVO> openingPriceLine(String sBegin, String sEnd) throws SQLException, NoSuchAlgorithmException, IOException, KeyManagementException {
+        LocalDate begin = LocalDate.parse(sBegin.subSequence(0, sBegin.length()), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        LocalDate end;
+        if(sEnd == null){
+            end = LocalDate.now();
+        }else {
+            end = LocalDate.parse(sEnd.subSequence(0, sEnd.length()), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+        return openingPriceLine(begin, end);
     }
 
 }

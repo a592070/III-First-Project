@@ -1,5 +1,7 @@
 package dao.stockDTO;
 
+import com.alibaba.fastjson.JSONObject;
+
 import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -40,26 +42,26 @@ public class ImmediateStock {
 
     }
     public void analyticJson(String responseBody){
-//        JSONObject jsonObject = new JSONObject(responseBody);
+        JSONObject jsonObject = new JSONObject(Boolean.parseBoolean(responseBody));
 
-//        String tmp = jsonObject.getJSONArray("msgArray").get(0).toString();
+        String tmp = jsonObject.getJSONArray("msgArray").get(0).toString();
         /**將"msgArray"中的object抓出來*/
-//        JSONObject jsonObject1 =new JSONObject(tmp);
+        JSONObject jsonObject1 =new JSONObject(Boolean.parseBoolean(tmp));
 
-//        System.out.println(jsonObject.getJSONArray("msgArray").get(0));
+        System.out.println(jsonObject.getJSONArray("msgArray").get(0));
 
         /**"z"的位置就是目前價格 "o"是開盤價格*/
-//        System.out.println("目前成交價格:\t"+jsonObject1.get("z"));
+        System.out.println("目前成交價格:\t"+jsonObject1.get("z"));
 
-//        Double nowPrice = Double.valueOf(jsonObject1.get("z").toString());
-//        System.out.println("目前成交價格:\t"+nowPrice);
+        Double nowPrice = Double.valueOf(jsonObject1.get("z").toString());
+        System.out.println("目前成交價格:\t"+nowPrice);
 
 
-//        Double openPrice = Double.valueOf(jsonObject1.get("o").toString());
+        Double openPrice = Double.valueOf(jsonObject1.get("o").toString());
 
-//        System.out.println("開盤價格:\t"+openPrice);
-//        System.out.println("當日最高:\t"+jsonObject1.get("h"));
-//        System.out.println("當日最低:\t"+jsonObject1.get("l"));
+        System.out.println("開盤價格:\t"+openPrice);
+        System.out.println("當日最高:\t"+jsonObject1.get("h"));
+        System.out.println("當日最低:\t"+jsonObject1.get("l"));
 
     }
 }

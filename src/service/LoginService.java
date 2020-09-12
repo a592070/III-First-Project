@@ -38,6 +38,9 @@ public class LoginService {
         }
         return false;
     }
+    public UserDO getUser(){
+        return user;
+    }
 
     public boolean isRegistered() throws IOException {
         for (UserDO ele : list) {

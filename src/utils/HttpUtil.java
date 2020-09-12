@@ -30,6 +30,9 @@ public class HttpUtil {
         while((s=br.readLine()) != null){
             sb.append(s);
         }
+
+        conn.disconnect();
+        br.close();
         return sb.toString();
     }
 
@@ -48,6 +51,9 @@ public class HttpUtil {
         while((s=br.readLine()) != null){
             sb.append(s);
         }
+
+        conn.disconnect();
+        br.close();
         return sb.toString();
     }
 
@@ -67,6 +73,9 @@ public class HttpUtil {
         while((s=br.readLine()) != null){
             sb.append(s);
         }
+
+        conn.disconnect();
+        br.close();
         return sb.toString();
     }
     // Login
@@ -95,6 +104,9 @@ public class HttpUtil {
         while((s=br.readLine()) != null){
             sb.append(s);
         }
+
+        conn.disconnect();
+        br.close();
         return sb.toString();
     }
 }

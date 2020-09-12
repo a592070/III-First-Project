@@ -1,5 +1,7 @@
+import dao.stockDTO.ImmediateStock;
 import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
+import service.StockServiceClient;
 import service.StockServiceHttp;
 import sun.net.www.protocol.http.HttpURLConnection;
 
@@ -10,12 +12,12 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException, SQLException, NoSuchAlgorithmException, KeyManagementException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, NoSuchFieldException {
+    public static void main(String[] args) throws Exception {
 
 //        StockService stockService = new StockService("3008");
 
@@ -75,9 +77,29 @@ public class Main {
 //        List<StockDayDO> list = new StockServiceHttp().getList();
 //        System.out.println(list);
 
-        Map<String, List<StockTotalNoDO>> allStockNo = new StockServiceHttp().getAllStockNo();
-        System.out.println(allStockNo);
+//        Map<String, List<StockTotalNoDO>> allStockNo = new StockServiceHttp().getAllStockNo();
+//        System.out.println(allStockNo);
 
+
+//        String beginDate = "20200801";
+//        LocalDate begin = LocalDate.parse(beginDate.subSequence(0, beginDate.length()), DateTimeFormatter.ofPattern("yyyyMMdd"));
+//        System.out.println(begin);
+//        List<StockDayDO> list = new StockServiceClient().getList();
+//        List<StockDayDO> stockNoList = new ArrayList<>();
+//        list.forEach(ele -> {
+//            if(ele.getStockNo().toString().equals("3231")){
+//                stockNoList.add(ele);
+//            }
+//        });
+//        Collections.sort(stockNoList, new Comparator<StockDayDO>() {
+//            @Override
+//            public int compare(StockDayDO o1, StockDayDO o2) {
+//                return o1.getDate().compareTo(o2.getDate());
+//            }
+//        });
+//        System.out.println(stockNoList);
+
+        new ImmediateStock("2330").getJsonData();
     }
     static Scanner sc = new Scanner(System.in);
     public static void input(){

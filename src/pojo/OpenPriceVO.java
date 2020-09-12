@@ -7,14 +7,16 @@ public class OpenPriceVO {
     private String stockNo;
     private String name;
     private BigDecimal openPrice;
+    private BigDecimal closePrice;
     private BigDecimal diffOpenPrice;
     private BigDecimal diffOCPrice;
     private Date date;
 
-    public OpenPriceVO(String stockNo, String name, BigDecimal openPrice, BigDecimal diffOpenPrice, BigDecimal diffOCPrice, Date date) {
+    public OpenPriceVO(String stockNo, String name, BigDecimal openPrice, BigDecimal closePrice, BigDecimal diffOpenPrice, BigDecimal diffOCPrice, Date date) {
         this.stockNo = stockNo;
         this.name = name;
         this.openPrice = openPrice;
+        this.closePrice = closePrice;
         this.diffOpenPrice = diffOpenPrice;
         this.date = date;
         this.diffOCPrice = diffOCPrice;
@@ -69,5 +71,13 @@ public class OpenPriceVO {
 
     public void setDiffOCPrice(BigDecimal diffOCPrice) {
         this.diffOCPrice = diffOCPrice;
+    }
+
+    public BigDecimal getClosePrice() {
+        return closePrice;
+    }
+
+    public void setClosePrice(BigDecimal closePrice) {
+        this.closePrice = closePrice;
     }
 }

@@ -1,5 +1,6 @@
 package view;
 
+import pojo.UserDO;
 import service.LoginService;
 import service.LoginServiceHttp;
 import utils.StringUtil;
@@ -10,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.sql.SQLException;
 
 public class LoginFrame {
@@ -169,32 +171,38 @@ public class LoginFrame {
                 JOptionPane.showMessageDialog(null, "請輸入正確帳號密碼!");
                 resetImg();
                 cancelClick();
-                return;
-            }
-            try {
+
+            }else if(checkNum.equals(inputCkNum)) {
+                try {
 //                LoginService service = new LoginService(userName, password);
-                LoginService service = new LoginServiceHttp(userName, password);
-                boolean isLogin = service.login();
-                if(isLogin && checkNum.equals(inputCkNum)){
-                    JOptionPane.showMessageDialog(null, "歡迎回來! "+userName);
+                    LoginService service = new LoginServiceHttp(userName, password);
+                    boolean isLogin = service.login();
+                    if (isLogin) {
+                        JOptionPane.showMessageDialog(null, "歡迎回來! " + userName);
 
-                    username = userName;
+//                    username = userName;
+                        UserDO userDO = service.getUser();
 
-                    // 進入主畫面
-                    new ManagerFrame().init(username);
-                    // 當前畫面消失
-                    jf.dispose();
-                }else{
-                    JOptionPane.showMessageDialog(null, "帳號、密碼或驗證碼錯誤!");
-                    passwordField.setText("");
-                    ckField.setText("");
+                        // 進入主畫面
+                        new ManagerFrame().init(userDO);
+                        // 當前畫面消失
+                        jf.dispose();
+                    } else {
+                        JOptionPane.showMessageDialog(null, "帳號、密碼或驗證碼錯誤!");
+                        passwordField.setText("");
+                        ckField.setText("");
+                    }
+
+                } catch (IOException | SQLException e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "出現異常錯誤!");
                 }
-
-            } catch (IOException|SQLException e) {
-                e.printStackTrace();
-                JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+                resetImg();
+            }else{
+                JOptionPane.showMessageDialog(null, "帳號、密碼或驗證碼錯誤!");
+                passwordField.setText("");
+                ckField.setText("");
             }
-            resetImg();
         }
         void registerClick(){
             String userName = userField.getText();

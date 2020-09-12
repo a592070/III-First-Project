@@ -1,7 +1,12 @@
 package view;
 
+import pojo.StockDayDO;
+import pojo.StockTotalNoDO;
+import pojo.UserDO;
+import service.StockServiceHttp;
 import view.component.AllStockNoComponent;
 import view.component.SingleStockNoComponent;
+import view.component.StatisticsStockComponent;
 
 import javax.swing.*;
 import javax.swing.event.TreeExpansionEvent;
@@ -12,6 +17,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.ExpandVetoException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 public class ManagerFrame {
     JFrame jf = new JFrame("Stock system");
@@ -22,14 +30,18 @@ public class ManagerFrame {
     public static String inputStock;
     private String userName;
 
+    protected UserDO user;
+    protected List<StockDayDO> list;
+    protected List<StockTotalNoDO> listStackNo;
 
 
-    public void init(String userName){
+    public void init(UserDO user){
         jf.setBounds(0,0,WIDTH,HEIGHT);
         jf.setResizable(false);
         jf.setLocationRelativeTo(null); // 居中顯示
 
-        this.userName = userName;
+        this.user = user;
+        getAllList();
 
         // Setting menu
         JMenuBar jmBar = new JMenuBar();
@@ -93,14 +105,11 @@ public class ManagerFrame {
                     jSplitPane.setRightComponent(new SingleStockNoComponent(jf));
                     jSplitPane.setDividerLocation(150);
                 }else if(stockStatisticsNode.equals(lastPathComponent)){
-                    jSplitPane.setRightComponent(new JLabel("股票分析...持續更新中"));
+                    jSplitPane.setRightComponent(new StatisticsStockComponent(jf));
                     jSplitPane.setDividerLocation(150);
                 }
             }
         });
-
-
-
 
 
         jSplitPane.setRightComponent(new AllStockNoComponent());
@@ -112,6 +121,17 @@ public class ManagerFrame {
 
         jf.setVisible(true);
     }
+
+    private  void getAllList() {
+        try {
+//            list = StockService.getList();
+            list = new StockServiceHttp().getList();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+        }
+    }
+
 
 
     public static void main(String[] args) {

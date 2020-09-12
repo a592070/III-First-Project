@@ -8,7 +8,10 @@ import pojo.StockTotalNoDO;
 import utils.HttpUtil;
 import utils.StringUtil;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.security.KeyManagementException;
@@ -19,9 +22,9 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class StockServiceHttp extends StockServiceSuper {
-    private static final String sUrlAllStockData = "http://localhost:8080/AllStockData";
-    private static final String sUrlAllStockInfo = "http://localhost:8080/AllStockInfo";
-    private static final String sUrlUpdateStock = "http://localhost:8080/InsertData";
+    private static String sUrlAllStockData;
+    private static String sUrlAllStockInfo;
+    private static String sUrlUpdateStock;
 
 //    private static List<StockDayDO> list;
 //    private static List<StockTotalNoDO> listAll;
@@ -29,18 +32,32 @@ public class StockServiceHttp extends StockServiceSuper {
 
 
     public StockServiceHttp(String sStockNo) throws IOException, SQLException {
+        if(StringUtil.isEmpty(sUrlAllStockData) || StringUtil.isEmpty(sUrlAllStockInfo) || StringUtil.isEmpty(sUrlUpdateStock)) init();
         if(list == null) getList();
         super.stock = new StockDayDO();
         if(!StringUtil.isEmpty(sStockNo)){
             super.sStockNo = sStockNo;
             super.stock.setStockNo(new BigDecimal(sStockNo));
 
-            Optional<StockDayDO> first = list.stream().filter(ele -> ele.getStockNo().compareTo(new BigDecimal(sStockNo)) == 0).findFirst();
-            super.stock.setName(first.get().getName());
+            list.forEach(ele -> {
+                if(ele.getStockNo().compareTo(new BigDecimal(sStockNo)) == 0){
+                    super.stock.setName(ele.getName());
+                }
+            });
         }
     }
+    public void init() throws IOException {
+        Properties prop = new Properties();
+        Reader reader = new FileReader("resources/ServerConnInfo.properties");
+        prop.load(reader);
+        sUrlAllStockData = prop.getProperty("AllStockData");
+        sUrlAllStockInfo = prop.getProperty("AllStockInfo");
+        sUrlUpdateStock = prop.getProperty("InsertData");
+        reader.close();
+    }
 
-    public StockServiceHttp() {
+    public StockServiceHttp() throws IOException {
+        if(StringUtil.isEmpty(sUrlAllStockData) || StringUtil.isEmpty(sUrlAllStockInfo) || StringUtil.isEmpty(sUrlUpdateStock)) init();
     }
 
     @Override

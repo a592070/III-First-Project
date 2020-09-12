@@ -5,6 +5,7 @@ import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
 import service.StockServiceHttp;
 import utils.StringUtil;
+import view.listener.ActionDoneListener;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
@@ -29,6 +30,7 @@ public class StatisticsStockComponent extends Box {
     private JTable jTable;
     private TableModel tableModel;
     private JScrollPane jScrollPane;
+    private JFrame jf;
 
     private String sStockNo;
     private String sStockDescript;
@@ -41,10 +43,12 @@ public class StatisticsStockComponent extends Box {
     private Vector<Vector> tableDate;
     private Vector vectorData;
 
-    private String[] sTitle = {"代號", "名稱", "開盤價", "漲跌" , "開盤價差", "日期"};
+    private String[] sTitle = {"代號", "名稱", "開盤價", "收盤價", "漲跌" , "開盤價差", "日期"};
 
-    public StatisticsStockComponent() {
+    public StatisticsStockComponent(JFrame jf) {
         super(BoxLayout.Y_AXIS);
+
+        this.jf = jf;
 
         getAllList();
 
@@ -69,6 +73,7 @@ public class StatisticsStockComponent extends Box {
 
 
 
+        settingTableDate(null);
         tableModel = new DefaultTableModel(tableDate, tableTitle);
 
         jTable = new JTable(tableModel){
@@ -101,24 +106,42 @@ public class StatisticsStockComponent extends Box {
         for (String s : sTitle) {
             tableTitle.add(s);
         }
-
-        lis.forEach(ele->{
-            vectorData = new Vector<>();
-            vectorData.add(ele.getStockNo());
-            vectorData.add(ele.getName());
-            vectorData.add(ele.getOpenPrice());
-            vectorData.add(ele.getDiffOCPrice());
-            vectorData.add(ele.getDiffOpenPrice());
-            vectorData.add(ele.getDate());
-            tableDate.add(vectorData);
-        });
-
+        if(lis != null) {
+            lis.forEach(ele -> {
+                vectorData = new Vector<>();
+                vectorData.add(ele.getStockNo());
+                vectorData.add(ele.getName());
+                vectorData.add(ele.getOpenPrice());
+                vectorData.add(ele.getClosePrice());
+                vectorData.add(ele.getDiffOCPrice());
+                vectorData.add(ele.getDiffOpenPrice());
+                vectorData.add(ele.getDate());
+                tableDate.add(vectorData);
+            });
+        }
     }
 
     private  void getAllList() {
         try {
             list = new StockServiceHttp().getList();
         } catch (IOException | SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+        }
+    }
+    private void updateList(){
+        try{
+            list = new StockServiceHttp().updateList();
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+        }
+    }
+    private void approximateSearch() {
+        try {
+            listStackNo = new StockServiceHttp().approximateSearch(sStockDescript);
+
+        } catch (IOException|SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "出現異常錯誤!");
         }
@@ -138,7 +161,6 @@ public class StatisticsStockComponent extends Box {
             switch (type){
                 case INPUT_STOCK_NO:
                     getData();
-                    settingTableDate(listOpenPriceVO);
                     break;
             }
             ((AbstractTableModel)tableModel).fireTableDataChanged();
@@ -153,30 +175,29 @@ public class StatisticsStockComponent extends Box {
 
             try {
                 LocalDate now = LocalDate.now();
-                int year = now.getYear();
-                int monthValue = now.getMonthValue();
-                StringBuilder begin = new StringBuilder();
-                begin.append(year).append(monthValue-1);
-                StringBuilder end = new StringBuilder();
-                end.append(year).append(monthValue);
 
-                listOpenPriceVO = new StockServiceHttp(stockNo).openingPriceLine(begin.toString(), end.toString());
+//                int year = now.getYear();
+//                int monthValue = now.getMonthValue();
+//                StringBuilder begin = new StringBuilder();
+//
+//                if(monthValue-1 < 10) begin.append(year).append(0).append(monthValue-1).append("01");
+                LocalDate begin = now.minusMonths(1);
 
+                listOpenPriceVO = new StockServiceHttp(stockNo).openingPriceLine(begin, now);
 
-            } catch (SQLException | NoSuchAlgorithmException | IOException | KeyManagementException throwables) {
+                new ConfirmDialog(jf, "更新成功", true, new ActionDoneListener() {
+                    @Override
+                    public void done(Object result) {
+//                        updateList();
+                        settingTableDate(listOpenPriceVO);
+//                        ((AbstractTableModel)tableModel).fireTableDataChanged();
+                    }
+                });
+
+            } catch (SQLException | IOException | NoSuchAlgorithmException | KeyManagementException throwables) {
                 throwables.printStackTrace();
-            }
-        }
-        private void approximateSearch() {
-            try {
-                listStackNo = new StockServiceHttp().approximateSearch(sStockDescript);
-
-            } catch (IOException|SQLException e) {
-                e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "出現異常錯誤!");
             }
         }
-
-
     }
 }
