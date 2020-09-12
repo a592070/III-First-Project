@@ -1,4 +1,4 @@
-import dao.stockDTO.ImmediateStock;
+import pojo.RealTimeVO;
 import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
 import service.StockServiceClient;
@@ -99,7 +99,7 @@ public class Main {
 //        });
 //        System.out.println(stockNoList);
 
-        new ImmediateStock("2330").getJsonData();
+        System.out.println(new RealTimeVO());
     }
     static Scanner sc = new Scanner(System.in);
     public static void input(){

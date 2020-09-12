@@ -83,10 +83,14 @@ public class StockServiceHttp extends StockServiceSuper {
                     StockTotalNoDO stockTotalNoDO = new StockTotalNoDO();
                     JSONArray ele = jsonArray.getJSONArray(j);
 
-                    stockTotalNoDO.setStockNo(ele.getBigDecimal(0));
+                    String str = ele.getString(0);
+                    if(!StringUtil.isEmpty(str)) stockTotalNoDO.setStockNo(new BigDecimal(str));
                     stockTotalNoDO.setName(ele.getString(1));
                     stockTotalNoDO.setCodeISIN(ele.getString(2));
-                    stockTotalNoDO.setDataListed(Date.valueOf(ele.getString(3)));
+
+                    str = ele.getString(3);
+                    if(!StringUtil.isEmpty(str)) stockTotalNoDO.setDataListed(Date.valueOf(str));
+
                     stockTotalNoDO.setGroup(ele.getString(4));
 
                     lis.add(stockTotalNoDO);
@@ -115,10 +119,14 @@ public class StockServiceHttp extends StockServiceSuper {
 
                 StockTotalNoDO stockTotalNoDO = new StockTotalNoDO();
 
-                stockTotalNoDO.setStockNo(obj.getBigDecimal(0));
+                String str = obj.getString(0);
+                if(!StringUtil.isEmpty(str)) stockTotalNoDO.setStockNo(new BigDecimal(str));
                 stockTotalNoDO.setName(obj.getString(1));
                 stockTotalNoDO.setCodeISIN(obj.getString(2));
-                stockTotalNoDO.setDataListed(Date.valueOf(obj.getString(3)));
+
+                str = obj.getString(3);
+                if(!StringUtil.isEmpty(str)) stockTotalNoDO.setDataListed(Date.valueOf(str));
+
                 stockTotalNoDO.setGroup(obj.getString(4));
 
                 listAll.add(stockTotalNoDO);
@@ -144,14 +152,30 @@ public class StockServiceHttp extends StockServiceSuper {
             StockDayDO stockDayDO = new StockDayDO();
 
             stockDayDO.setName(array.getString(0));
-            stockDayDO.setStockNo(array.getBigDecimal(1));
-            stockDayDO.setDate(Date.valueOf(array.getString(2)));
-            stockDayDO.setTradeVolume(array.getBigDecimal(3));
-            stockDayDO.setTransAction(array.getBigDecimal(4));
-            stockDayDO.setHighestPrice(array.getBigDecimal(5));
-            stockDayDO.setLowestPrice(array.getBigDecimal(6));
-            stockDayDO.setOpeningPrice(array.getBigDecimal(7));
-            stockDayDO.setClosingPrice(array.getBigDecimal(8));
+
+            String str = array.getString(1);
+            if(!StringUtil.isEmpty(str)) stockDayDO.setStockNo(new BigDecimal(str));
+
+            str = array.getString(2);
+            if(!StringUtil.isEmpty(str)) stockDayDO.setDate(Date.valueOf(str));
+
+            str = array.getString(3);
+            if(!StringUtil.isEmpty(str)) stockDayDO.setTradeVolume(new BigDecimal(str));
+
+            str = array.getString(4);
+            if(!StringUtil.isEmpty(str)) stockDayDO.setTransAction(new BigDecimal(str));
+
+            str = array.getString(5);
+            if(!StringUtil.isEmpty(str)) stockDayDO.setHighestPrice(new BigDecimal(str));
+
+            str = array.getString(6);
+            if(!StringUtil.isEmpty(str)) stockDayDO.setLowestPrice(new BigDecimal(str));
+
+            str = array.getString(7);
+            if(!StringUtil.isEmpty(str)) stockDayDO.setOpeningPrice(new BigDecimal(str));
+
+            str = array.getString(8);
+            if(!StringUtil.isEmpty(str)) stockDayDO.setClosingPrice(new BigDecimal(str));
 
             list.add(stockDayDO);
         }

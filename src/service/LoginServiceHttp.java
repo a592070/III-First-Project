@@ -71,8 +71,12 @@ public class LoginServiceHttp extends LoginService{
                 string = data.getString(6);
                 if(!StringUtil.isEmpty(string)) user.setFavorite5(new BigDecimal(string));
 
-                user.setRegister(Date.valueOf(data.getString(7)));
-                user.setLastDate(Date.valueOf(data.getString(8)));
+                string = data.getString(7);
+                if(!StringUtil.isEmpty(string)) user.setRegister(Date.valueOf(string));
+
+                string = data.getString(8);
+                if(!StringUtil.isEmpty(string)) user.setLastDate(Date.valueOf(string));
+
                 user.setAdmin(Objects.equals(data.getString(9), "true"));
             }
         }
