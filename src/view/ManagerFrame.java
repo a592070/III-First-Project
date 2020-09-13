@@ -5,6 +5,7 @@ import pojo.StockTotalNoDO;
 import pojo.UserDO;
 import service.StockServiceHttp;
 import view.component.AllStockNoComponent;
+import view.component.RealTimeComponent;
 import view.component.SingleStockNoComponent;
 import view.component.StatisticsStockComponent;
 
@@ -39,6 +40,7 @@ public class ManagerFrame {
         jf.setBounds(0,0,WIDTH,HEIGHT);
         jf.setResizable(false);
         jf.setLocationRelativeTo(null); // 居中顯示
+        jf.setTitle("歡迎回來! "+user.getUserName());
 
         this.user = user;
         getAllList();
@@ -79,14 +81,14 @@ public class ManagerFrame {
         DefaultMutableTreeNode stockRoot = new DefaultMutableTreeNode("股票系統");
         DefaultMutableTreeNode stockNoNode = new DefaultMutableTreeNode("台股代號總表");
         DefaultMutableTreeNode stockDataNode = new DefaultMutableTreeNode("個股資料");
-//        DefaultMutableTreeNode stockDataNode1 = new DefaultMutableTreeNode("每月個股資料");
         DefaultMutableTreeNode stockStatisticsNode = new DefaultMutableTreeNode("股票分析");
+        DefaultMutableTreeNode realTimeNode = new DefaultMutableTreeNode("即時股票資訊");
 
         stockRoot.add(stockNoNode);
         stockRoot.add(stockDataNode);
         stockRoot.add(stockStatisticsNode);
-//        stockDataNode.add(stockDataNode1);
-//        stockDataNode.add(stockStatsNode1);
+        stockRoot.add(realTimeNode);
+
 
         JTree jTree = new JTree(stockRoot);
         jTree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -106,6 +108,9 @@ public class ManagerFrame {
                     jSplitPane.setDividerLocation(150);
                 }else if(stockStatisticsNode.equals(lastPathComponent)){
                     jSplitPane.setRightComponent(new StatisticsStockComponent(jf));
+                    jSplitPane.setDividerLocation(150);
+                }else if(realTimeNode.equals(lastPathComponent)){
+                    jSplitPane.setRightComponent(new RealTimeComponent(jf));
                     jSplitPane.setDividerLocation(150);
                 }
             }
@@ -131,11 +136,4 @@ public class ManagerFrame {
             JOptionPane.showMessageDialog(null, "出現異常錯誤!");
         }
     }
-
-
-
-    public static void main(String[] args) {
-        new ManagerFrame().init(null);
-    }
-
 }

@@ -21,7 +21,7 @@ public class ConfirmDialog extends JDialog {
 
         Box vBox = Box.createVerticalBox();
         Box box = Box.createHorizontalBox();
-        JButton button = new JButton("更新成功");
+        JButton button = new JButton("成功");
 
         button.addActionListener(new ConfirmAction());
 

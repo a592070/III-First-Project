@@ -6,8 +6,10 @@ import pojo.RealTimeVO;
 import pojo.StockTotalNoDO;
 import service.StockServiceHttp;
 import utils.StringUtil;
+import view.listener.ActionDoneListener;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
@@ -16,6 +18,8 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
@@ -31,6 +35,9 @@ public class RealTimeComponent extends Box {
     private TableModel tableModelFive;
     private JPanel jPanel;
     private JPanel jPanelFive;
+    private JScrollPane jScrollPane1;
+    private JScrollPane jScrollPane2;
+
     private JFrame jf;
 
     private String sStockNo;
@@ -51,8 +58,9 @@ public class RealTimeComponent extends Box {
     private String[] sFiveTitle = {"最佳五檔賣出價格", "最佳五檔買入價格"};
 
 
-    public RealTimeComponent(int axis) {
+    public RealTimeComponent(JFrame jf) {
         super(BoxLayout.Y_AXIS);
+        this.jf = jf;
 
         JPanel inputPanel = new JPanel();
         inputPanel.setMaximumSize(new Dimension(WIDTH, 50));
@@ -66,12 +74,7 @@ public class RealTimeComponent extends Box {
 
         JButton inputButton = new JButton("確認");
         inputButton.setFont(new Font(null, Font.PLAIN, 20));
-        inputButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                approximateSearch();
-            }
-        });
+        inputButton.addActionListener(new RealTimeAction());
 
 
         inputPanel.add(label, BorderLayout.WEST);
@@ -99,8 +102,10 @@ public class RealTimeComponent extends Box {
         jTable.setAutoCreateRowSorter(true);
         jTable.setUpdateSelectionOnSort(true);
 
-        jPanel = new JPanel();
-        jPanel.add(jTable);
+//        jPanel = new JPanel();
+//        jPanel.add(jTable);
+
+
 
         tableModelFive = new DefaultTableModel(tableDateFive, tableTitleFive);
         jTableFive = new JTable(tableModelFive){
@@ -116,12 +121,27 @@ public class RealTimeComponent extends Box {
         jTableFive.setAutoCreateRowSorter(true);
         jTableFive.setUpdateSelectionOnSort(true);
 
-        jPanelFive = new JPanel();
-        jPanelFive.add(jTable);
+//        jPanelFive = new JPanel();
+//        jPanelFive.add(jTable);
 
-        this.add(jPanel);
-        this.add(jPanelFive);
 
+//        Box vBox = Box.createVerticalBox();
+//        Box tableBox = Box.createHorizontalBox();
+//        Box tableFiveBox = Box.createHorizontalBox();
+//
+//        vBox.add(tableBox);
+//        vBox.add(Box.createVerticalStrut(100));
+//        vBox.add(tableFiveBox);
+//
+//        this.add(vBox);
+
+//        this.add(jTable);
+//        this.add(jTableFive);
+
+        jScrollPane1 = new JScrollPane(jTable);
+        jScrollPane2 = new JScrollPane(jTableFive);
+        this.add(jScrollPane1);
+        this.add(jScrollPane2);
     }
     private void approximateSearch() {
         sStockNo = input.getText();
@@ -157,17 +177,13 @@ public class RealTimeComponent extends Box {
         tableDate.clear();
         tableDateFive.clear();
 
-        for (String s : sTitle) {
-            tableTitle.add(s);
-        }
-        for (String s : sFiveTitle) {
-            tableTitleFive.add(s);
-        }
+        tableTitle.addAll(Arrays.asList(sTitle));
+        tableTitleFive.addAll(Arrays.asList(sFiveTitle));
         if(vo != null) {
             vectorData = new Vector();
             vectorData.add(vo.getStockNo());
             vectorData.add(vo.getName());
-            vectorData.add(vo.getLatestTradePrice());
+            if(!vo.getLatestTradePrice().equals("-")) vectorData.add(vo.getLatestTradePrice());
             vectorData.add(vo.getHigh());
             vectorData.add(vo.getLow());
             vectorData.add(vo.getOpen());
@@ -175,30 +191,65 @@ public class RealTimeComponent extends Box {
             vectorData.add(vo.getLimitUp());
             tableDate.add(vectorData);
 
-            vectorDataFive = new Vector();
-            vectorDataFive.add(vo.getBestAskPrice1());
-            vectorDataFive.add(vo.getBestBidPrice1());
-            tableDateFive.add(vectorDataFive);
+//            vectorDataFive = new Vector();
+//            vectorDataFive.add(vo.getBestAskPrice1());
+//            vectorDataFive.add(vo.getBestBidPrice1());
+            tableDateFive.add(new Vector(Arrays.asList(new String[]{vo.getBestAskPrice1(), vo.getBestBidPrice1()})));
+            tableDateFive.add(new Vector(Arrays.asList(new String[]{vo.getBestAskPrice2(), vo.getBestBidPrice2()})));
+            tableDateFive.add(new Vector(Arrays.asList(new String[]{vo.getBestAskPrice3(), vo.getBestBidPrice3()})));
+            tableDateFive.add(new Vector(Arrays.asList(new String[]{vo.getBestAskPrice4(), vo.getBestBidPrice4()})));
+            tableDateFive.add(new Vector(Arrays.asList(new String[]{vo.getBestAskPrice5(), vo.getBestBidPrice5()})));
 
-            vectorDataFive = new Vector();
-            vectorDataFive.add(vo.getBestAskPrice2());
-            vectorDataFive.add(vo.getBestBidPrice2());
-            tableDateFive.add(vectorDataFive);
+//            vectorDataFive = new Vector();
+//            vectorDataFive.add(vo.getBestAskPrice2());
+//            vectorDataFive.add(vo.getBestBidPrice2());
+//            tableDateFive.add(vectorDataFive);
+//
+//            vectorDataFive = new Vector();
+//            vectorDataFive.add(vo.getBestAskPrice3());
+//            vectorDataFive.add(vo.getBestBidPrice3());
+//            tableDateFive.add(vectorDataFive);
+//
+//            vectorDataFive = new Vector();
+//            vectorDataFive.add(vo.getBestAskPrice4());
+//            vectorDataFive.add(vo.getBestBidPrice4());
+//            tableDateFive.add(vectorDataFive);
+//
+//            vectorDataFive = new Vector();
+//            vectorDataFive.add(vo.getBestAskPrice5());
+//            vectorDataFive.add(vo.getBestBidPrice5());
+//            tableDateFive.add(vectorDataFive);
+        }
+    }
 
-            vectorDataFive = new Vector();
-            vectorDataFive.add(vo.getBestAskPrice3());
-            vectorDataFive.add(vo.getBestBidPrice3());
-            tableDateFive.add(vectorDataFive);
+    class RealTimeAction implements ActionListener{
 
-            vectorDataFive = new Vector();
-            vectorDataFive.add(vo.getBestAskPrice4());
-            vectorDataFive.add(vo.getBestBidPrice4());
-            tableDateFive.add(vectorDataFive);
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            approximateSearch();
+            new ConfirmDialog(jf, "更新成功", true, new ActionDoneListener() {
+                @Override
+                public void done(Object result) {
+                    RealTimeVO vo = getRealTimeVO();
+                    settingTableDate(vo);
+                    ((AbstractTableModel)tableModel).fireTableDataChanged();
+                    ((AbstractTableModel)tableModelFive).fireTableDataChanged();
 
-            vectorDataFive = new Vector();
-            vectorDataFive.add(vo.getBestAskPrice5());
-            vectorDataFive.add(vo.getBestBidPrice5());
-            tableDateFive.add(vectorDataFive);
+                    // 先執行一次再跑 timer
+                    new Timer(5000, new TimerTask()).start();
+                }
+            });
+
+        }
+    }
+
+    class TimerTask implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            RealTimeVO vo = getRealTimeVO();
+            settingTableDate(vo);
+            ((AbstractTableModel)tableModel).fireTableDataChanged();
+            ((AbstractTableModel)tableModelFive).fireTableDataChanged();
         }
     }
 

@@ -169,9 +169,7 @@ public class LoginFrame {
 
             if(StringUtil.isEmpty(userName) || StringUtil.isEmpty(password)){
                 JOptionPane.showMessageDialog(null, "請輸入正確帳號密碼!");
-                resetImg();
                 cancelClick();
-
             }else if(checkNum.equals(inputCkNum)) {
                 try {
 //                LoginService service = new LoginService(userName, password);
@@ -196,13 +194,15 @@ public class LoginFrame {
                 } catch (IOException | SQLException e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+                    cancelClick();
                 }
-                resetImg();
+
             }else{
                 JOptionPane.showMessageDialog(null, "帳號、密碼或驗證碼錯誤!");
                 passwordField.setText("");
                 ckField.setText("");
             }
+            resetImg();
         }
         void registerClick(){
             String userName = userField.getText();
@@ -224,17 +224,21 @@ public class LoginFrame {
                         JOptionPane.showMessageDialog(null, "註冊成功 " + userName+" ，請重新登錄");
                         passwordField.setText("");
                         ckField.setText("");
+
                     }else{
                         JOptionPane.showMessageDialog(null, "請重新確認");
                         cancelClick();
                     }
                 }else{
                     JOptionPane.showMessageDialog(null, "你已經註冊過了，"+userName);
+                    passwordField.setText("");
+                    ckField.setText("");
                 }
 
             } catch (IOException|SQLException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+                cancelClick();
             }
             resetImg();
         }
@@ -252,8 +256,5 @@ public class LoginFrame {
         }
     }
 
-    public static void main(String[] args) {
-        new LoginFrame().init();
-    }
 
 }

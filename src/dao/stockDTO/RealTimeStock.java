@@ -106,4 +106,9 @@ public class RealTimeStock {
 
         return realTimeVO;
     }
+
+    public static void main(String[] args) throws Exception {
+        RealTimeVO init = new RealTimeStock("2330").init();
+        System.out.println(init);
+    }
 }
