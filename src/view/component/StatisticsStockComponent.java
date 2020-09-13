@@ -10,11 +10,13 @@ import view.listener.ActionDoneListener;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
@@ -82,6 +84,22 @@ public class StatisticsStockComponent extends Box {
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
+
+//            @Override
+//            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+//                int rowModel = convertRowIndexToModel(row);
+//                int columnModel = convertColumnIndexToModel(column);
+//
+//                Component comp = super.prepareRenderer(renderer, row, column);
+//                BigDecimal value = new BigDecimal(getValueAt(rowModel, 4).toString());
+//                if(value.compareTo(BigDecimal.ZERO) >= 0){
+//                    comp.setBackground(Color.RED);
+//
+//                }else{
+//                    comp.setBackground(Color.GREEN);
+//                }
+//                return comp;
+//            }
         };
         // 只能選一行
         jTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -113,8 +131,18 @@ public class StatisticsStockComponent extends Box {
                 vectorData.add(ele.getName());
                 vectorData.add(ele.getOpenPrice());
                 vectorData.add(ele.getClosePrice());
-                vectorData.add(ele.getDiffOCPrice());
-                vectorData.add(ele.getDiffOpenPrice());
+                BigDecimal diffOCPrice = ele.getDiffOCPrice();
+                if(diffOCPrice.compareTo(BigDecimal.ZERO) >= 0){
+                    vectorData.add("<html><font color='red'>"+ele.getDiffOCPrice()+"</font></html>");
+                }else{
+                    vectorData.add("<html><font color='green'>"+ele.getDiffOCPrice()+"</font></html>");
+                }
+                BigDecimal diffOpenPrice = ele.getDiffOpenPrice();
+                if(diffOpenPrice.compareTo(BigDecimal.ZERO) >= 0){
+                    vectorData.add("<html><font color='red'>"+ele.getDiffOpenPrice()+"</font></html>");
+                }else{
+                    vectorData.add("<html><font color='green'>"+ele.getDiffOpenPrice()+"</font></html>");
+                }
                 vectorData.add(ele.getDate());
                 tableDate.add(vectorData);
             });
@@ -176,11 +204,6 @@ public class StatisticsStockComponent extends Box {
             try {
                 LocalDate now = LocalDate.now();
 
-//                int year = now.getYear();
-//                int monthValue = now.getMonthValue();
-//                StringBuilder begin = new StringBuilder();
-//
-//                if(monthValue-1 < 10) begin.append(year).append(0).append(monthValue-1).append("01");
                 LocalDate begin = now.minusMonths(1);
 
                 listOpenPriceVO = new StockServiceHttp(stockNo).openingPriceLine(begin, now);

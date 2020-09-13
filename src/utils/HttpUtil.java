@@ -109,4 +109,9 @@ public class HttpUtil {
         br.close();
         return sb.toString();
     }
+
+    public static void main(String[] args) throws IOException {
+        String info2 = getInfo2("http://localhost:8080/AllStockInfo", "reqType", "map");
+        System.out.println(info2);
+    }
 }

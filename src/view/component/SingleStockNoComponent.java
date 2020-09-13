@@ -21,6 +21,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -93,12 +94,15 @@ public class SingleStockNoComponent extends Box{
 
         JButton buttonUpdate = new JButton("更新資料");
         JButton buttonShowAll = new JButton("顯示全部");
+        JButton buttonDownload = new JButton("下載資料");
 
         buttonUpdate.addActionListener(new ActionSingleStockEvent(ActionSingleStockEvent.UPDATE_LIST));
         buttonShowAll.addActionListener(new ActionSingleStockEvent(ActionSingleStockEvent.SHOW_ALL));
+        buttonDownload.addActionListener(new ActionSingleStockEvent(ActionSingleStockEvent.DOWNLOAD));
 
         buttonPanel.add(buttonUpdate);
         buttonPanel.add(buttonShowAll);
+        buttonPanel.add(buttonDownload);
         this.add(buttonPanel);
 
 
@@ -198,7 +202,7 @@ public class SingleStockNoComponent extends Box{
             JOptionPane.showMessageDialog(null, "出現異常錯誤!");
         }
     }
-    private void download() {
+    private void download(List<StockDayDO> lis) {
         JFileChooser jFileChooser = new JFileChooser();
         int option = jFileChooser.showSaveDialog(null);
         if(option == JFileChooser.APPROVE_OPTION){
@@ -208,33 +212,30 @@ public class SingleStockNoComponent extends Box{
 
             JSONObject jsonObject = new JSONObject();
             JSONArray fieldArray = new JSONArray();
-            Arrays.stream(StockDayDO.class.getFields()).forEach(ele -> fieldArray.add(ele.getName()));
+            Field[] fields = StockDayDO.class.getDeclaredFields();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                fieldArray.add(field.getName());
+            }
+
             jsonObject.put("field", fieldArray);
 
             JSONArray objArray = new JSONArray();
-            currList.forEach(ele -> objArray.add(ele.toJsonArray()));
+            lis.forEach(ele -> objArray.add(ele.toJsonArray()));
 
             jsonObject.put("data", objArray);
 
-            JSONWriter jsonWriter = null;
-            try {
-                jsonWriter = new JSONWriter(new FileWriter(file));
+            try (
+                    FileWriter writer = new FileWriter(file);
+                    JSONWriter jsonWriter= new JSONWriter(writer);
+                    )
+            {
                 jsonWriter.writeObject(jsonObject);
             }catch (IOException e){
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(null, "出現異常錯誤!");
-            }finally {
-                if(jsonWriter != null) {
-                    try {
-                        jsonWriter.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
             }
         }
-
-
     }
 
     class ActionSingleStockEvent implements ActionListener{
@@ -277,7 +278,11 @@ public class SingleStockNoComponent extends Box{
                     settingTableDate(list);
                     break;
                 case DOWNLOAD:
-                    download();
+                    if(currList == null) {
+                        download(list);
+                    }else{
+                        download(currList);
+                    }
                     break;
                 default:
                     break;

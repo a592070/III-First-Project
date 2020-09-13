@@ -187,7 +187,7 @@ public abstract class StockServiceSuper {
         openPriceVO.setOpenPrice(stockDayDO.getOpeningPrice());
         openPriceVO.setClosePrice(stockDayDO.getClosingPrice());
         openPriceVO.setDiffOpenPrice(BigDecimal.ZERO);
-        openPriceVO.setDiffOCPrice(stockDayDO.getOpeningPrice().subtract(stockDayDO.getClosingPrice()));
+        openPriceVO.setDiffOCPrice(stockDayDO.getClosingPrice().subtract(stockDayDO.getOpeningPrice()));
 
         BigDecimal openingPrice = stockDayDO.getOpeningPrice();
 
@@ -206,7 +206,7 @@ public abstract class StockServiceSuper {
             openPriceVO.setOpenPrice(nextOpen);
             openPriceVO.setClosePrice(nextClose);
             openPriceVO.setDiffOpenPrice(diff);
-            openPriceVO.setDiffOCPrice(nextOpen.subtract(nextClose));
+            openPriceVO.setDiffOCPrice(nextClose.subtract(nextOpen));
 
             opLine.add(openPriceVO);
             openingPrice = nextOpen;
