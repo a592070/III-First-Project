@@ -12,24 +12,24 @@ create table ACCOUNT
 	last_update date
 )
 
-create table STOCK_DAYS_ID
+create table STOCK_DAYS
 (
-	day date not null constraint STOCK_DAYS_ID_PK primary key,
-	trade_volume numeric(30),
-    transation numeric(10),
-    h_price numeric(10,2),
-    l_price numeric(10,2),
-    opening_price numeric(10,2),
-    closing_price numeric(10,2)
+    stockno number(10),
+	trade_volume number(30),
+    transation number(10),
+    h_price number(10,2),
+    l_price number(10,2),
+    opening_price number(10,2),
+    closing_price number(10,2)
+    day date
 )
 
 
 create table STOCK_TOTAL_NO
 (
-	id number(10) not null constraint STOCK_TOTAL_NO_PK primary key,
+	stockno number(10) not null constraint STOCK_TOTAL_NO_PK primary key,
 	name varchar2(255),
 	code_isin varchar2(255),
 	date_listed date,
 	industrial_group varchar2(255),
-	tablename varchar2(255)
 )

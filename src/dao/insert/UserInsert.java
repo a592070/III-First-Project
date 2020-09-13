@@ -1,21 +1,15 @@
 package dao.insert;
 
 import connections.DBConnectionPool;
-import dao.query.UserQuery;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.omg.CORBA.PRIVATE_MEMBER;
 import pojo.UserDO;
 
 import javax.sql.DataSource;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Properties;
 
 public class UserInsert {

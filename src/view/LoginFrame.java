@@ -3,6 +3,7 @@ package view;
 import pojo.UserDO;
 import service.LoginService;
 import service.LoginServiceHttp;
+import service.LoginServiceSuper;
 import utils.StringUtil;
 import view.component.RandNumImage;
 
@@ -173,7 +174,7 @@ public class LoginFrame {
             }else if(checkNum.equals(inputCkNum)) {
                 try {
 //                LoginService service = new LoginService(userName, password);
-                    LoginService service = new LoginServiceHttp(userName, password);
+                    LoginServiceSuper service = new LoginServiceHttp(userName, password);
                     boolean isLogin = service.login();
                     if (isLogin) {
                         JOptionPane.showMessageDialog(null, "歡迎回來! " + userName);
@@ -217,7 +218,7 @@ public class LoginFrame {
             }
             try {
 //                LoginService service = new LoginService(userName, password);
-                LoginService service = new LoginServiceHttp(userName, password);
+                LoginServiceSuper service = new LoginServiceHttp(userName, password);
                 boolean isRegister = service.isRegistered();
                 if(!isRegister){
                     if(service.register()) {

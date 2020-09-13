@@ -101,8 +101,20 @@ public abstract class StockServiceSuper {
             }
         });
 
-        if(stockNoList.get(0).getDate().toLocalDate().compareTo(begin) > 0) updateData(begin.toString());
-        if(stockNoList.get(stockNoList.size()-1).getDate().toLocalDate().compareTo(end) < 0) updateData(end.toString());
+        boolean isBeginDateExist = false;
+        boolean isEndDateExist = false;
+        for (StockDayDO stockDayDO : stockNoList) {
+            if(stockDayDO.getDate().toLocalDate().getMonthValue() == begin.getMonthValue()){
+                isBeginDateExist = true;
+            }
+            if(stockDayDO.getDate().toLocalDate().getMonthValue() == end.getMonthValue()){
+                isEndDateExist = true;
+            }
+        }
+        if(!isBeginDateExist) updateData(begin.toString());
+        if(!isEndDateExist) updateData(end.toString());
+//        if(stockNoList.get(0).getDate().toLocalDate().getMonthValue() != begin.getMonthValue()) updateData(begin.toString());
+//        if(stockNoList.get(stockNoList.size()-1).getDate().toLocalDate().compareTo(end) < 0) updateData(end.toString());
 
         updateList();
 
@@ -119,7 +131,11 @@ public abstract class StockServiceSuper {
             }
         });
 
-
+        for (int i=0 ; i < stockNoList.size(); i++) {
+            if(stockNoList.get(i).getDate().toLocalDate().getMonthValue() == begin.getMonthValue()){
+                return stockNoList.subList(i, stockNoList.size());
+            }
+        }
         return stockNoList;
     }
 

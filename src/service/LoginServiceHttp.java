@@ -17,20 +17,19 @@ import java.sql.SQLException;
 import java.util.Objects;
 import java.util.Properties;
 
-public class LoginServiceHttp extends LoginService{
-    private String userName;
-    private String password;
+public class LoginServiceHttp extends LoginServiceSuper{
+
     private static String sUrl;
     private String reqType1 = "login";
     private String reqType2 = "isRegister";
     private String reqType3 = "register";
-    private UserDO user;
+
 
 
     public LoginServiceHttp(String userName, String password) throws IOException, SQLException {
         if(StringUtil.isEmpty(sUrl)) init();
-        this.userName = userName;
-        this.password = password;
+        super.userName = userName;
+        super.password = password;
     }
 
     public LoginServiceHttp() throws IOException, SQLException {
@@ -82,9 +81,7 @@ public class LoginServiceHttp extends LoginService{
         }
         return Objects.equals(isSuccess, "true");
     }
-    public UserDO getUser(){
-        return user;
-    }
+
 
     @Override
     public boolean isRegistered() throws IOException {

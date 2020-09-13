@@ -9,16 +9,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-public class LoginService {
-    private String userName;
-    private String password;
-    private UserDO user;
+public class LoginService extends LoginServiceSuper{
     private static List<UserDO> list;
 
     public LoginService(String userName , String password) throws IOException, SQLException {
-        this.userName = userName.toUpperCase();
-        this.password = password;
-        user = new UserDO(this.userName, this.password);
+        super.userName = userName.toUpperCase();
+        super.password = password;
+        user = new UserDO(super.userName, super.password);
         if(list == null)getList();
     }
 
@@ -37,9 +34,6 @@ public class LoginService {
             if(userName.equals(ele.getUserName()) && password.equals(ele.getPassword())) return true;
         }
         return false;
-    }
-    public UserDO getUser(){
-        return user;
     }
 
     public boolean isRegistered() throws IOException {
