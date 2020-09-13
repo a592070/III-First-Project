@@ -1,5 +1,8 @@
 package view.component;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONWriter;
 import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
 import service.StockServiceHttp;
@@ -15,10 +18,13 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 
@@ -192,11 +198,50 @@ public class SingleStockNoComponent extends Box{
             JOptionPane.showMessageDialog(null, "出現異常錯誤!");
         }
     }
+    private void download() {
+        JFileChooser jFileChooser = new JFileChooser();
+        int option = jFileChooser.showSaveDialog(null);
+        if(option == JFileChooser.APPROVE_OPTION){
+            File file = jFileChooser.getSelectedFile();
+            String fileName = jFileChooser.getName(file);
+            file = new File(jFileChooser.getCurrentDirectory(), fileName+".json");
+
+            JSONObject jsonObject = new JSONObject();
+            JSONArray fieldArray = new JSONArray();
+            Arrays.stream(StockDayDO.class.getFields()).forEach(ele -> fieldArray.add(ele.getName()));
+            jsonObject.put("field", fieldArray);
+
+            JSONArray objArray = new JSONArray();
+            currList.forEach(ele -> objArray.add(ele.toJsonArray()));
+
+            jsonObject.put("data", objArray);
+
+            JSONWriter jsonWriter = null;
+            try {
+                jsonWriter = new JSONWriter(new FileWriter(file));
+                jsonWriter.writeObject(jsonObject);
+            }catch (IOException e){
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "出現異常錯誤!");
+            }finally {
+                if(jsonWriter != null) {
+                    try {
+                        jsonWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+
+    }
 
     class ActionSingleStockEvent implements ActionListener{
         static final int INPUT_NO = 1;
         static final int UPDATE_LIST = 2;
         static final int SHOW_ALL = 3;
+        static final int DOWNLOAD = 4;
 
 
         private int type;
@@ -230,6 +275,9 @@ public class SingleStockNoComponent extends Box{
                 case SHOW_ALL:
                     getAllList();
                     settingTableDate(list);
+                    break;
+                case DOWNLOAD:
+                    download();
                     break;
                 default:
                     break;

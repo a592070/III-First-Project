@@ -3,6 +3,7 @@ package utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONWriter;
 import pojo.StockDayDO;
 import pojo.StockTotalNoDO;
 import pojo.UserDO;
@@ -32,6 +33,7 @@ public class JsonUtil {
             obj.put("field", fieldList);
             obj.put("data", dataList);
         }
+
 
         return obj.toJSONString();
     }
