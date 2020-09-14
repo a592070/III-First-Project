@@ -183,7 +183,8 @@ public class RealTimeComponent extends Box {
             vectorData = new Vector();
             vectorData.add(vo.getStockNo());
             vectorData.add(vo.getName());
-            if(!vo.getLatestTradePrice().equals("-")) vectorData.add(vo.getLatestTradePrice());
+//            if(!"-".equals(vo.getLatestTradePrice()))
+            vectorData.add(vo.getLatestTradePrice());
             vectorData.add(vo.getHigh());
             vectorData.add(vo.getLow());
             vectorData.add(vo.getOpen());
